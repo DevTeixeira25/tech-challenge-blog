@@ -1,11 +1,10 @@
-# Arquitetura do Sistema
+# Arquitetura do sistema
 
 ## Visão geral
 
-A aplicação é uma **API REST** stateless em Node.js/TypeScript que persiste
-postagens em um banco **PostgreSQL** através do ORM **Prisma**. O desenho segue
-o padrão de **camadas** para separar responsabilidades e maximizar a
-testabilidade.
+A aplicação é uma API REST stateless escrita em Node.js com TypeScript. Ela
+guarda as postagens num PostgreSQL usando o Prisma como ORM. O código é dividido
+em camadas, tanto para separar responsabilidades quanto para facilitar os testes.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -30,30 +29,31 @@ testabilidade.
 
 ## Camadas e responsabilidades
 
-| Camada          | Arquivo                                | Responsabilidade                                              |
-| --------------- | -------------------------------------- | ------------------------------------------------------------- |
-| **Routes**      | `src/routes/posts.routes.ts`           | Mapeia URLs → controller. `/search` declarada antes de `/:id`. |
-| **Controllers** | `src/controllers/posts.controller.ts`  | Traduz HTTP ↔ service; valida entrada com Zod.                |
-| **Services**    | `src/services/posts.service.ts`         | Regra de negócio (ex.: 404 quando não existe). Injeção de repo. |
-| **Repositories**| `src/repositories/posts.repository.ts` | Único ponto que fala com o Prisma.                            |
-| **Schemas**     | `src/schemas/post.schema.ts`            | Validação Zod (create/update/search).                        |
-| **Middlewares** | `src/middlewares/error.middleware.ts`   | 404 e tratamento central de erros.                           |
-| **Errors**      | `src/errors/AppError.ts`                | Erros de domínio com status HTTP.                            |
-| **Config**      | `src/config/env.ts`                     | Validação das variáveis de ambiente (Zod).                   |
-| **Lib**         | `src/lib/prisma.ts`                     | Singleton do PrismaClient.                                    |
-| **Docs**        | `src/docs/openapi.ts`                   | Especificação OpenAPI (Swagger).                             |
+| Camada       | Arquivo                                | Responsabilidade                                              |
+| ------------ | -------------------------------------- | ------------------------------------------------------------- |
+| Routes       | `src/routes/posts.routes.ts`           | Mapeia as URLs para o controller. A `/search` vem antes da `/:id`. |
+| Controllers  | `src/controllers/posts.controller.ts`  | Ponte entre HTTP e service; valida a entrada com Zod.         |
+| Services     | `src/services/posts.service.ts`         | Regra de negócio (ex.: 404 quando não existe). Recebe o repo por injeção. |
+| Repositories | `src/repositories/posts.repository.ts` | Único ponto que fala com o Prisma.                            |
+| Schemas      | `src/schemas/post.schema.ts`            | Validação Zod (create, update e search).                     |
+| Middlewares  | `src/middlewares/error.middleware.ts`   | Rota 404 e tratamento central de erros.                      |
+| Errors       | `src/errors/AppError.ts`                | Erros de domínio com o status HTTP embutido.                 |
+| Config       | `src/config/env.ts`                     | Validação das variáveis de ambiente com Zod.                 |
+| Lib          | `src/lib/prisma.ts`                     | Singleton do PrismaClient.                                    |
+| Docs         | `src/docs/openapi.ts`                   | Especificação OpenAPI usada pelo Swagger.                    |
 
-## Por que separar `app.ts` de `server.ts`?
+## Separação entre app.ts e server.ts
 
-`app.ts` **cria** a aplicação Express (sem abrir porta) e `server.ts` apenas a
-sobe com `listen`. Isso permite que os testes de integração (Supertest)
-importem a app diretamente, sem subir um servidor real.
+O `app.ts` monta a aplicação Express, mas não abre nenhuma porta. Quem faz o
+`listen` é o `server.ts`. Essa divisão existe para os testes de integração:
+o Supertest importa a app direto e faz as requisições sem precisar subir um
+servidor de verdade.
 
-## Por que injeção de dependência no Service?
+## Injeção de dependência no service
 
-`PostsService` recebe o repositório no construtor (default = repositório real).
-Nos testes unitários passamos um **mock**, isolando a regra de negócio do banco
-de dados — testes rápidos e determinísticos.
+O `PostsService` recebe o repositório pelo construtor, com o repositório real
+como padrão. Nos testes unitários eu passo um mock no lugar, o que isola a regra
+de negócio do banco e deixa os testes rápidos e previsíveis.
 
 ## Modelo de dados
 
@@ -73,18 +73,17 @@ model Post {
 
 ## Fluxo de erros
 
-Todos os erros são encaminhados via `next(err)` ao middleware central, que
-padroniza a resposta:
+Nenhum controller responde erro diretamente: todos chamam `next(err)`, e o
+middleware central decide o status:
 
-- `ZodError` → **400** (validação)
-- `AppError` / `NotFoundError` → status próprio (ex.: **404**)
-- `PrismaClientKnownRequestError` código `P2025` → **404**
-- qualquer outro → **500**
+- `ZodError` vira 400 (falha de validação).
+- `AppError` e `NotFoundError` usam o próprio status (por exemplo, 404).
+- O `P2025` do Prisma (registro inexistente) também vira 404.
+- Qualquer outro erro cai em 500.
 
 ## Containerização
 
-- **Dockerfile** multi-stage: um estágio compila o TypeScript e gera o Prisma
-  Client; o estágio final contém só o `dist` e dependências de produção →
-  imagem menor e mais segura.
-- **docker-compose.yml** orquestra `db` (Postgres) + `app`, com healthcheck no
-  banco e aplicação de migrations no start.
+O Dockerfile é multi-stage: um estágio compila o TypeScript e gera o Prisma
+Client, e o estágio final leva apenas o `dist` e as dependências de produção, o
+que deixa a imagem menor. O `docker-compose.yml` sobe o banco e a API juntos, com
+healthcheck no Postgres e as migrations sendo aplicadas quando a API inicia.

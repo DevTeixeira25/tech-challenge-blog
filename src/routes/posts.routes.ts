@@ -3,8 +3,8 @@ import { postsController } from '../controllers/posts.controller';
 
 const router = Router();
 
-// ATENÇÃO: /search precisa vir ANTES de /:id, senão o Express
-// interpreta "search" como um valor de :id.
+// /search precisa vir antes de /:id, senao o Express trata "search"
+// como se fosse um id.
 router.get('/search', postsController.search);
 
 router.get('/', postsController.list);

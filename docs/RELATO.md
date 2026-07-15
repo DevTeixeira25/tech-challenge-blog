@@ -1,74 +1,73 @@
-# Relato de Experiências e Desafios
+# Relato de experiências e desafios
 
-> Projeto desenvolvido **individualmente** (equipe de 1 integrante).
+Fiz este projeto sozinho, então o relato abaixo é a minha experiência com o
+desenvolvimento do começo ao fim.
 
 ## Contexto
 
-A aplicação nasceu na fase anterior em **OutSystems** (low-code) e precisou ser
-**refatorada para Node.js** com persistência em banco de dados, visando escala
-nacional. A migração exigiu repensar a arquitetura de forma explícita, já que o
-low-code abstraía boa parte das camadas.
+A aplicação começou na fase anterior em OutSystems, uma plataforma low-code.
+Agora a ideia era refatorar o back-end para Node.js e passar a guardar os dados
+num banco de verdade. Na prática, isso me obrigou a pensar na arquitetura de
+forma bem mais explícita: no low-code boa parte das camadas vinha pronta, e aqui
+eu tive que montar cada uma delas na mão.
 
-## Decisões técnicas
+## Por que escolhi cada coisa
 
-- **PostgreSQL + Prisma**: escolhi um banco relacional pela integridade dos
-  dados e pela ótima experiência de desenvolvimento do Prisma (tipagem, migrations
-  versionadas e client gerado).
-- **TypeScript**: tipagem estática reduz erros e melhora a manutenção.
-- **Arquitetura em camadas** (controller/service/repository): permitiu testar a
-  regra de negócio isoladamente com mocks.
+Fui de PostgreSQL com Prisma. O Postgres por ser relacional e me dar garantia de
+integridade dos dados, e o Prisma porque a experiência de desenvolvimento é
+muito boa: tipagem, migrations versionadas e o client gerado automaticamente
+economizam bastante tempo. Escolhi TypeScript pelo mesmo motivo: com tipagem
+estática eu erro menos e o código fica mais fácil de manter. E separei a
+aplicação em camadas (controller, service e repository) principalmente para
+conseguir testar a regra de negócio isolada, sem depender do banco.
 
-## Desafios enfrentados
+## Os desafios que apareceram
 
-1. **Ordem das rotas no Express**: `GET /posts/search` era capturada por
-   `GET /posts/:id` (interpretando "search" como um id). Resolvi declarando a
-   rota `/search` **antes** de `/:id`.
-2. **Tratamento consistente de erros**: centralizei em um middleware único que
-   traduz `ZodError`, erros de domínio (`NotFoundError`) e erros do Prisma
-   (`P2025`) em respostas HTTP padronizadas.
-3. **Testabilidade x banco de dados**: separei `app.ts` de `server.ts` para os
-   testes de integração subirem a aplicação sem abrir porta, e injetei o
-   repositório no service para os testes unitários rodarem sem banco.
-4. **Prisma dentro do Alpine (o desafio mais instrutivo)**: ao subir o
-   `docker compose`, o container da API entrava em *loop de restart* com o erro
-   `Could not parse schema engine response`. O build da imagem passava no CI, mas
-   o container só quebrava **em tempo de execução** — ou seja, o pipeline verde
-   não garantia que a aplicação rodava. A causa: a imagem `node:20-alpine` (musl)
-   não trazia o OpenSSL e o Prisma não conseguia carregar o *query engine*.
-   Resolvi instalando `openssl`/`libc6-compat` na imagem e declarando o binary
-   target `linux-musl-openssl-3.0.x` no `schema.prisma`. Lição: validar a
-   aplicação **rodando de fato**, não só o build.
-5. **Consistência entre ambientes**: Docker multi-stage + docker-compose
-   garantem que a aplicação rode igual em dev, CI e produção, com migrations
-   aplicadas automaticamente no start.
-6. **CI/CD**: configurar um PostgreSQL como *service* no GitHub Actions para os
-   testes de integração rodarem contra um banco real a cada push/PR.
-7. **Conflito de porta do PostgreSQL no ambiente local**: ao rodar a suíte de
-   testes de integração na minha máquina, todos os testes e2e falhavam com
-   `Authentication failed against database server at localhost`. O CI, porém,
-   estava verde. A causa era um **conflito de porta**: já havia um PostgreSQL
-   instalado no host ocupando a `5432`, então as conexões locais iam para o
-   servidor errado (credenciais diferentes), enquanto no CI o único Postgres era
-   o do pipeline. Resolvi expondo o banco do `docker-compose` na porta **`5433`**
-   do host (`5433:5432`) — mantendo `5432` interno para o container — e apontando
-   o `DATABASE_URL` local para `localhost:5433`. Também configurei o Jest para
-   carregar o `.env` automaticamente (`setupFiles: ['dotenv/config']`). Lição:
-   divergências entre ambiente local e CI muitas vezes são de infraestrutura
-   (portas, credenciais, rede), não de código.
+O primeiro foi bobo, mas me travou por um tempo: o `GET /posts/search` estava
+caindo no `GET /posts/:id`, porque o Express interpretava "search" como se fosse
+um id. Bastou declarar a rota `/search` antes da `/:id` para resolver.
 
-## Aprendizados
+Depois quis padronizar os erros. Em vez de tratar cada caso no controller,
+centralizei tudo num middleware que converte os erros de validação do Zod, os
+erros de domínio (como o meu `NotFoundError`) e os erros do Prisma (o `P2025`,
+de registro inexistente) em respostas HTTP consistentes.
 
-- A separação em camadas paga o custo inicial ao facilitar testes e evolução.
-- Migrations versionadas evitam divergência de schema entre os ambientes.
-- Um pipeline de CI verde no *build* não substitui rodar a aplicação de verdade:
-  bugs de runtime (como o do Prisma/Alpine) só aparecem executando o container.
-- Investir em documentação (README + Swagger) reduz o atrito de uso da API.
+Para os testes, separei o `app.ts` do `server.ts`. Assim os testes de integração
+conseguem subir a aplicação sem abrir uma porta de rede, e como o service recebe
+o repositório por injeção, os testes unitários rodam sem banco nenhum.
+
+O desafio mais interessante foi o Prisma dentro do Alpine. Quando subi o
+`docker compose`, a API entrava em loop de restart com o erro
+`Could not parse schema engine response`. O que me confundiu foi que o build da
+imagem passava no CI, ou seja, o pipeline estava verde, mas o container quebrava
+na hora de rodar. Descobri que a imagem `node:20-alpine` usa musl e não vinha com
+o OpenSSL, e sem ele o Prisma não carrega o query engine. Resolvi instalando
+`openssl` e `libc6-compat` na imagem e declarando o binary target
+`linux-musl-openssl-3.0.x` no `schema.prisma`. A lição que ficou foi clara: build
+verde não é a mesma coisa que aplicação rodando.
+
+Ainda na parte de ambiente, tive um problema que só acontecia na minha máquina.
+Os testes e2e falhavam localmente com `Authentication failed against database
+server at localhost`, mas passavam no CI. Demorei a perceber que era conflito de
+porta: eu já tinha um PostgreSQL instalado ocupando a 5432, então minhas conexões
+locais iam para o servidor errado, com outras credenciais. No CI isso não
+acontecia porque lá o único Postgres era o do pipeline. Passei a expor o banco do
+compose na porta 5433 do host (mantendo a 5432 dentro do container) e apontei o
+`DATABASE_URL` local para `localhost:5433`. Também configurei o Jest para carregar
+o `.env` sozinho. Foi um bom lembrete de que muita diferença entre local e CI é de
+infraestrutura (portas, credenciais, rede), e não do código.
+
+## O que levo de aprendizado
+
+Separar a aplicação em camadas custa um pouco no início, mas paga rápido na hora
+de testar e evoluir. As migrations versionadas foram essenciais para o schema não
+divergir entre os ambientes. E os dois problemas de Docker me marcaram pela mesma
+razão: só confiar no CI verde não basta, precisei rodar a aplicação de verdade
+para achar os bugs. Por fim, ter caprichado no README e no Swagger fez diferença
+até para mim mesmo durante o desenvolvimento.
 
 ## Divisão de tarefas
 
-Projeto desenvolvido individualmente. Todas as etapas foram executadas pelo
-único integrante:
-
-| Integrante       | Responsabilidades                                                                 |
-| ---------------- | --------------------------------------------------------------------------------- |
-| Jefferson Costa  | Arquitetura, API (Express/TS), banco (Prisma/PostgreSQL), Docker, CI/CD, testes e documentação |
+Como o projeto foi individual, fiz todas as etapas: arquitetura, a API em
+Express/TypeScript, o banco com Prisma e PostgreSQL, a configuração de Docker e
+CI/CD, os testes e a documentação.

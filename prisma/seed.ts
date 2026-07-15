@@ -24,19 +24,19 @@ const posts = [
 ];
 
 async function main() {
-  console.log('🌱 Populando o banco com posts de exemplo...');
-  // Limpa antes para o seed ser idempotente
+  console.log('Populando o banco com posts de exemplo...');
+  // Limpa antes para o seed poder rodar mais de uma vez sem duplicar
   await prisma.post.deleteMany();
   for (const post of posts) {
     const created = await prisma.post.create({ data: post });
-    console.log(`  ✔ criado: ${created.title}`);
+    console.log(`  criado: ${created.title}`);
   }
-  console.log('✅ Seed concluído.');
+  console.log('Seed concluido.');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Erro no seed:', e);
+    console.error('Erro no seed:', e);
     process.exit(1);
   })
   .finally(async () => {
