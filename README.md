@@ -13,6 +13,7 @@ persistência em **PostgreSQL**.
 
 ## 📚 Sumário
 
+- [Demonstração](#-demonstração)
 - [Stack](#-stack)
 - [Arquitetura](#-arquitetura)
 - [Pré-requisitos](#-pré-requisitos)
@@ -24,6 +25,14 @@ persistência em **PostgreSQL**.
 - [Testes](#-testes)
 - [CI/CD](#-cicd)
 - [Relato de experiências e desafios](#-relato-de-experiências-e-desafios)
+
+---
+
+## 🎥 Demonstração
+
+📺 **Vídeo de apresentação:** _(adicionar link aqui — ex.: YouTube)_
+
+> Substitua o texto acima pela URL do vídeo de demonstração após a gravação.
 
 ---
 
