@@ -1,8 +1,6 @@
 # Relato de Experiências e Desafios
 
-> Documento exigido na entrega. Preencha com a experiência real do grupo antes
-> de submeter. Abaixo há um rascunho com os pontos técnicos já enfrentados no
-> desenvolvimento, que vocês podem ajustar.
+> Projeto desenvolvido **individualmente** (equipe de 1 integrante).
 
 ## Contexto
 
@@ -43,9 +41,11 @@ low-code abstraía boa parte das camadas.
 - Migrations versionadas evitam divergência de schema entre os ambientes.
 - Investir em documentação (README + Swagger) reduz o atrito de uso da API.
 
-## Divisão de tarefas (preencher)
+## Divisão de tarefas
 
-| Integrante | Responsabilidades |
-| ---------- | ----------------- |
-|            |                   |
-|            |                   |
+Projeto desenvolvido individualmente. Todas as etapas foram executadas pelo
+único integrante:
+
+| Integrante       | Responsabilidades                                                                 |
+| ---------------- | --------------------------------------------------------------------------------- |
+| Jefferson Costa  | Arquitetura, API (Express/TS), banco (Prisma/PostgreSQL), Docker, CI/CD, testes e documentação |
