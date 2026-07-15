@@ -43,6 +43,18 @@ low-code abstraía boa parte das camadas.
    aplicadas automaticamente no start.
 6. **CI/CD**: configurar um PostgreSQL como *service* no GitHub Actions para os
    testes de integração rodarem contra um banco real a cada push/PR.
+7. **Conflito de porta do PostgreSQL no ambiente local**: ao rodar a suíte de
+   testes de integração na minha máquina, todos os testes e2e falhavam com
+   `Authentication failed against database server at localhost`. O CI, porém,
+   estava verde. A causa era um **conflito de porta**: já havia um PostgreSQL
+   instalado no host ocupando a `5432`, então as conexões locais iam para o
+   servidor errado (credenciais diferentes), enquanto no CI o único Postgres era
+   o do pipeline. Resolvi expondo o banco do `docker-compose` na porta **`5433`**
+   do host (`5433:5432`) — mantendo `5432` interno para o container — e apontando
+   o `DATABASE_URL` local para `localhost:5433`. Também configurei o Jest para
+   carregar o `.env` automaticamente (`setupFiles: ['dotenv/config']`). Lição:
+   divergências entre ambiente local e CI muitas vezes são de infraestrutura
+   (portas, credenciais, rede), não de código.
 
 ## Aprendizados
 

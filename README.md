@@ -151,7 +151,12 @@ docker compose down
 | Variável       | Descrição                       | Exemplo                                                      |
 | -------------- | ------------------------------- | ------------------------------------------------------------ |
 | `PORT`         | Porta da API                    | `3000`                                                       |
-| `DATABASE_URL` | String de conexão do PostgreSQL | `postgresql://blog:blog@localhost:5432/blog?schema=public`   |
+| `DATABASE_URL` | String de conexão do PostgreSQL | `postgresql://blog:blog@localhost:5433/blog?schema=public`   |
+
+> ℹ️ **Porta do banco:** dentro do Docker o Postgres usa a porta `5432`
+> (rede interna, `db:5432`). No **host**, o compose expõe o banco em **`5433`**
+> para não conflitar com um PostgreSQL já instalado na máquina. Por isso, ao
+> rodar app/testes **localmente**, o `DATABASE_URL` aponta para `localhost:5433`.
 
 ---
 

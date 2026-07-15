@@ -2,6 +2,8 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
+  // Carrega o .env (DATABASE_URL) antes dos testes de integração
+  setupFiles: ['dotenv/config'],
   roots: ['<rootDir>/tests'],
   testMatch: ['**/*.test.ts'],
   collectCoverageFrom: [

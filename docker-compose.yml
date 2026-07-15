@@ -8,7 +8,9 @@ services:
       POSTGRES_PASSWORD: blog
       POSTGRES_DB: blog
     ports:
-      - '5432:5432'
+      # Host 5433 -> container 5432, para evitar conflito com um PostgreSQL
+      # eventualmente já instalado na máquina (que costuma ocupar a 5432).
+      - '5433:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
