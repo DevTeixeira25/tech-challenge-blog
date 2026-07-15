@@ -1,0 +1,24 @@
+// Prisma schema — API de blogging (Tech Challenge FIAP)
+// Docs: https://www.prisma.io/docs
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Postagem do blog criada por um(a) docente.
+model Post {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  author    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([title])
+  @@map("posts")
+}
