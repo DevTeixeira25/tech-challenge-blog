@@ -2,6 +2,9 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+# OpenSSL é necessário para o Prisma detectar o engine correto no Alpine (musl)
+RUN apk add --no-cache openssl libc6-compat
+
 # Instala dependências (inclui devDependencies para compilar)
 COPY package*.json ./
 RUN npm ci
@@ -18,6 +21,9 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+
+# OpenSSL necessário em runtime para os engines do Prisma
+RUN apk add --no-cache openssl libc6-compat
 
 # Apenas dependências de produção
 COPY package*.json ./
