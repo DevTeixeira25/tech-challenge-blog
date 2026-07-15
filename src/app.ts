@@ -16,7 +16,7 @@ export function createApp(): Application {
   app.use(cors());
   app.use(express.json());
 
-  // Rota raiz — apresenta a API e aponta para a documentação
+  // Rota raiz: apresenta a API e aponta para a documentação
   app.get('/', (_req: Request, res: Response) => {
     res.json({
       name: 'API de Blogging — Tech Challenge FIAP',

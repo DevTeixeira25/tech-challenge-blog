@@ -5,7 +5,7 @@ import { NotFoundError } from '../src/errors/AppError';
 
 /**
  * Testes UNITÁRIOS do PostsService.
- * O repositório é totalmente mockado — não há acesso a banco.
+ * O repositório é totalmente mockado, então não há acesso a banco.
  * Cobre as funções críticas exigidas: create, update, delete (remove) e busca.
  */
 

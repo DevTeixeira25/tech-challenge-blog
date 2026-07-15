@@ -7,7 +7,7 @@ import {
 } from '../schemas/post.schema';
 
 /**
- * Controllers dos posts — traduzem HTTP <-> service.
+ * Controllers dos posts: fazem a ponte entre HTTP e service.
  * Validação com Zod acontece aqui; erros vão para o middleware central
  * via next(err).
  */

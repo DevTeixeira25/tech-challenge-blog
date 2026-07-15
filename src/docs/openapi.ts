@@ -16,7 +16,10 @@ export const openapiSpec = {
         properties: {
           id: { type: 'string', format: 'uuid' },
           title: { type: 'string', example: 'Introdução à fotossíntese' },
-          content: { type: 'string', example: 'A fotossíntese é...' },
+          content: {
+            type: 'string',
+            example: 'A fotossíntese converte luz solar em energia.',
+          },
           author: { type: 'string', example: 'Prof. Carlos Lima' },
           createdAt: { type: 'string', format: 'date-time' },
           updatedAt: { type: 'string', format: 'date-time' },
@@ -27,7 +30,10 @@ export const openapiSpec = {
         required: ['title', 'content', 'author'],
         properties: {
           title: { type: 'string', example: 'Introdução à fotossíntese' },
-          content: { type: 'string', example: 'A fotossíntese é...' },
+          content: {
+            type: 'string',
+            example: 'A fotossíntese converte luz solar em energia.',
+          },
           author: { type: 'string', example: 'Prof. Carlos Lima' },
         },
       },

@@ -3,7 +3,7 @@ import { prisma } from '../lib/prisma';
 import { CreatePostInput, UpdatePostInput } from '../schemas/post.schema';
 
 /**
- * Repositório de Posts — única camada que fala com o Prisma.
+ * Repositório de Posts: única camada que fala com o Prisma.
  * Isolar o acesso a dados aqui deixa o service testável com um mock.
  */
 export const postsRepository = {

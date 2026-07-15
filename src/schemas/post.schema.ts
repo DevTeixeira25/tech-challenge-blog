@@ -18,7 +18,7 @@ export const createPostSchema = z.object({
     .max(120, 'author deve ter no máximo 120 caracteres'),
 });
 
-/** Validação do corpo para edição (PUT /posts/:id) — todos opcionais. */
+/** Validação do corpo para edição (PUT /posts/:id): todos opcionais. */
 export const updatePostSchema = createPostSchema
   .partial()
   .refine((data) => Object.keys(data).length > 0, {

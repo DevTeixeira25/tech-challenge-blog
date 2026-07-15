@@ -1,7 +1,7 @@
 {
   "name": "tech-challenge-blog",
   "version": "1.0.0",
-  "description": "API REST de blogging dinâmico para docentes da rede pública — Tech Challenge FIAP",
+  "description": "API REST de blogging para docentes da rede publica (Tech Challenge FIAP)",
   "main": "dist/server.js",
   "engines": {
     "node": ">=20"
