@@ -16,6 +16,24 @@ export function createApp(): Application {
   app.use(cors());
   app.use(express.json());
 
+  // Rota raiz — apresenta a API e aponta para a documentação
+  app.get('/', (_req: Request, res: Response) => {
+    res.json({
+      name: 'API de Blogging — Tech Challenge FIAP',
+      version: '1.0.0',
+      docs: '/docs',
+      health: '/health',
+      endpoints: {
+        'GET /posts': 'Lista todos os posts',
+        'GET /posts/search?q=': 'Busca posts por palavra-chave',
+        'GET /posts/:id': 'Lê um post',
+        'POST /posts': 'Cria um post',
+        'PUT /posts/:id': 'Edita um post',
+        'DELETE /posts/:id': 'Exclui um post',
+      },
+    });
+  });
+
   // Healthcheck (usado pelo Docker/CI)
   app.get('/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok' });
