@@ -5,3 +5,6 @@ coverage/
 .env
 .env.local
 .DS_Store
+
+# Material de apoio pessoal (não faz parte da entrega)
+ROTEIRO-VIDEO.md
