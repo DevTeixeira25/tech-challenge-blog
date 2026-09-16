@@ -17,6 +17,15 @@ COPY tsconfig.json ./
 COPY src ./src
 RUN npm run build
 
+# Compila o seed separado: no host ele roda com tsx, mas a imagem final não
+# leva devDependencies. Assim `node dist/seed.js` funciona dentro do container.
+RUN npx tsc prisma/seed.ts \
+    --outDir dist \
+    --module commonjs \
+    --target ES2022 \
+    --esModuleInterop \
+    --skipLibCheck
+
 # ---------- Estágio 2: runtime enxuto ----------
 FROM node:22-alpine AS runner
 WORKDIR /app

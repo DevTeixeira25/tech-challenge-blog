@@ -30,8 +30,25 @@ services:
       NODE_ENV: production
       PORT: 3000
       DATABASE_URL: postgresql://blog:blog@db:5432/blog?schema=public
+      # Em produção, troque por um valor aleatório e longo (ver .env.example).
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-troque-em-producao}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
     ports:
       - '3000:3000'
+
+  web:
+    build:
+      context: ./web
+      args:
+        # O bundle é estático: a URL da API entra em tempo de build e é a
+        # que o NAVEGADOR enxerga (host), não o nome do serviço interno.
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+    container_name: blog-web
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - '8080:80'
 
 volumes:
   pgdata:
