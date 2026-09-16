@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -23,14 +24,37 @@ const posts = [
   },
 ];
 
+// Senhas em texto claro só aqui, para o ambiente de desenvolvimento:
+// no banco é gravado apenas o hash bcrypt.
+const teachers = [
+  { name: 'Prof. Ana Souza', email: 'ana@blog.dev', password: 'senha123' },
+  { name: 'Prof. Carlos Lima', email: 'carlos@blog.dev', password: 'senha123' },
+];
+
 async function main() {
-  console.log('Populando o banco com posts de exemplo...');
+  console.log('Populando o banco com docentes e posts de exemplo...');
+
   // Limpa antes para o seed poder rodar mais de uma vez sem duplicar
   await prisma.post.deleteMany();
+  await prisma.user.deleteMany();
+
+  for (const teacher of teachers) {
+    const passwordHash = await bcrypt.hash(teacher.password, 10);
+    const created = await prisma.user.create({
+      data: {
+        name: teacher.name,
+        email: teacher.email,
+        passwordHash,
+      },
+    });
+    console.log(`  docente: ${created.email} (senha: ${teacher.password})`);
+  }
+
   for (const post of posts) {
     const created = await prisma.post.create({ data: post });
     console.log(`  criado: ${created.title}`);
   }
+
   console.log('Seed concluido.');
 }
 

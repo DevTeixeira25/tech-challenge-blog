@@ -24,3 +24,32 @@ model Post {
   @@index([title])
   @@map("posts")
 }
+
+/// Docente que pode entrar na área administrativa e gerenciar posts.
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+/// Convite que permite a um(a) novo(a) docente se cadastrar.
+/// Gerado por quem já tem acesso; vale uma vez e expira.
+model Invite {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  /// Opcional: quando preenchido, só esse e-mail pode usar o convite.
+  email     String?
+  expiresAt DateTime
+  usedAt    DateTime?
+  /// Ids de docentes (sem relação formal: o convite sobrevive a exclusões).
+  createdBy String?
+  usedBy    String?
+  createdAt DateTime  @default(now())
+
+  @@map("invites")
+}

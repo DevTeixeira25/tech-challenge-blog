@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { createApp } from '../src/app';
 import { prisma } from '../src/lib/prisma';
+import { createTestTeacher, loginTestTeacher } from './helpers/auth';
 
 /**
  * Testes de INTEGRAÇÃO (end-to-end) com Supertest.
@@ -12,12 +13,24 @@ import { prisma } from '../src/lib/prisma';
 
 const app = createApp();
 
+/** Token do docente de teste; escrita nos posts exige autenticação. */
+let token: string;
+
+/** Atalho para mandar o header Authorization nas rotas protegidas. */
+const auth = () => ({ Authorization: `Bearer ${token}` });
+
+beforeAll(async () => {
+  await createTestTeacher();
+  token = await loginTestTeacher(app);
+});
+
 beforeEach(async () => {
   await prisma.post.deleteMany();
 });
 
 afterAll(async () => {
   await prisma.post.deleteMany();
+  await prisma.user.deleteMany();
   await prisma.$disconnect();
 });
 
@@ -27,6 +40,10 @@ const validPost = {
   author: 'Prof. Carlos',
 };
 
+/** Cria um post já autenticado (usado como arranjo em vários testes). */
+const createPost = (data: Record<string, unknown> = validPost) =>
+  request(app).post('/posts').set(auth()).send(data);
+
 describe('Posts API (e2e)', () => {
   it('GET /health responde ok', async () => {
     const res = await request(app).get('/health');
@@ -35,7 +52,7 @@ describe('Posts API (e2e)', () => {
   });
 
   it('POST /posts cria um post e retorna 201', async () => {
-    const res = await request(app).post('/posts').send(validPost);
+    const res = await createPost();
 
     expect(res.status).toBe(201);
     expect(res.body).toMatchObject(validPost);
@@ -43,14 +60,14 @@ describe('Posts API (e2e)', () => {
   });
 
   it('POST /posts retorna 400 quando faltam campos', async () => {
-    const res = await request(app).post('/posts').send({ title: 'só título' });
+    const res = await createPost({ title: 'só título' });
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('ValidationError');
   });
 
   it('GET /posts lista os posts criados', async () => {
-    await request(app).post('/posts').send(validPost);
+    await createPost();
 
     const res = await request(app).get('/posts');
 
@@ -59,7 +76,7 @@ describe('Posts API (e2e)', () => {
   });
 
   it('GET /posts/:id retorna o post', async () => {
-    const created = await request(app).post('/posts').send(validPost);
+    const created = await createPost();
 
     const res = await request(app).get(`/posts/${created.body.id}`);
 
@@ -73,10 +90,11 @@ describe('Posts API (e2e)', () => {
   });
 
   it('PUT /posts/:id edita o post', async () => {
-    const created = await request(app).post('/posts').send(validPost);
+    const created = await createPost();
 
     const res = await request(app)
       .put(`/posts/${created.body.id}`)
+      .set(auth())
       .send({ title: 'Título editado' });
 
     expect(res.status).toBe(200);
@@ -84,9 +102,9 @@ describe('Posts API (e2e)', () => {
   });
 
   it('DELETE /posts/:id remove o post e retorna 204', async () => {
-    const created = await request(app).post('/posts').send(validPost);
+    const created = await createPost();
 
-    const del = await request(app).delete(`/posts/${created.body.id}`);
+    const del = await request(app).delete(`/posts/${created.body.id}`).set(auth());
     expect(del.status).toBe(204);
 
     const get = await request(app).get(`/posts/${created.body.id}`);
@@ -94,10 +112,8 @@ describe('Posts API (e2e)', () => {
   });
 
   it('GET /posts/search encontra por palavra-chave no título', async () => {
-    await request(app).post('/posts').send(validPost);
-    await request(app)
-      .post('/posts')
-      .send({ title: 'Outro assunto', content: 'nada a ver', author: 'X' });
+    await createPost();
+    await createPost({ title: 'Outro assunto', content: 'nada a ver', author: 'X' });
 
     const res = await request(app).get('/posts/search').query({ q: 'fotossíntese' });
 
@@ -109,5 +125,41 @@ describe('Posts API (e2e)', () => {
   it('GET /posts/search retorna 400 sem o parâmetro q', async () => {
     const res = await request(app).get('/posts/search');
     expect(res.status).toBe(400);
+  });
+});
+
+describe('Posts API — rotas protegidas', () => {
+  it('POST /posts sem token retorna 401', async () => {
+    const res = await request(app).post('/posts').send(validPost);
+
+    expect(res.status).toBe(401);
+    expect(res.body.error).toBe('UnauthorizedError');
+  });
+
+  it('PUT /posts/:id sem token retorna 401', async () => {
+    const created = await createPost();
+
+    const res = await request(app)
+      .put(`/posts/${created.body.id}`)
+      .send({ title: 'Tentando editar' });
+
+    expect(res.status).toBe(401);
+  });
+
+  it('DELETE /posts/:id sem token retorna 401', async () => {
+    const created = await createPost();
+
+    const res = await request(app).delete(`/posts/${created.body.id}`);
+
+    expect(res.status).toBe(401);
+  });
+
+  it('POST /posts com token inválido retorna 401', async () => {
+    const res = await request(app)
+      .post('/posts')
+      .set({ Authorization: 'Bearer token-invalido' })
+      .send(validPost);
+
+    expect(res.status).toBe(401);
   });
 });

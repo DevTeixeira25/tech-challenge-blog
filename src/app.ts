@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import { postsRoutes } from './routes/posts.routes';
+import { authRoutes } from './routes/auth.routes';
 import { openapiSpec } from './docs/openapi';
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
@@ -24,12 +25,17 @@ export function createApp(): Application {
       docs: '/docs',
       health: '/health',
       endpoints: {
+        'POST /auth/login': 'Autentica um(a) docente e devolve o token JWT',
+        'POST /auth/register': 'Cadastra um(a) docente (codigo de convite opcional)',
+        'GET /auth/me': 'Dados do(a) docente autenticado(a)',
+        'POST /auth/invites': 'Gera um convite (requer autenticacao)',
+        'GET /auth/invites': 'Lista os convites (requer autenticacao)',
         'GET /posts': 'Lista todos os posts',
         'GET /posts/search?q=': 'Busca posts por palavra-chave',
         'GET /posts/:id': 'Lê um post',
-        'POST /posts': 'Cria um post',
-        'PUT /posts/:id': 'Edita um post',
-        'DELETE /posts/:id': 'Exclui um post',
+        'POST /posts': 'Cria um post (requer autenticação)',
+        'PUT /posts/:id': 'Edita um post (requer autenticação)',
+        'DELETE /posts/:id': 'Exclui um post (requer autenticação)',
       },
     });
   });
@@ -42,7 +48,8 @@ export function createApp(): Application {
   // Documentação interativa
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpec));
 
-  // Rotas de posts
+  // Rotas de autenticação e de posts
+  app.use('/auth', authRoutes);
   app.use('/posts', postsRoutes);
 
   // 404 e tratamento central de erros (sempre por último)
