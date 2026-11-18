@@ -82,12 +82,12 @@ function validate({ name, email, password }: FormValues): FormErrors {
 }
 
 /**
- * Cadastro de docente: nome, e-mail e senha bastam.
+ * Cadastro aberto de estudante; convite válido permite acesso docente.
  * Quem recebeu um convite pode informar o código — o link do convite já traz
  * o valor pronto em ?convite=XXXX-XXXX-XXXX.
  */
 export function RegisterPage() {
-  const { register, isAuthenticated, loading } = useAuth();
+  const { user, register, isAuthenticated, loading } = useAuth();
   const [searchParams] = useSearchParams();
   const [values, setValues] = useState<FormValues>({
     name: '',
@@ -105,7 +105,7 @@ export function RegisterPage() {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/admin" replace />;
+    return <Navigate to={user?.role === 'TEACHER' ? '/admin' : '/'} replace />;
   }
 
   function handleChange(field: keyof FormValues, value: string) {
@@ -139,7 +139,7 @@ export function RegisterPage() {
 
       await register(data);
       // O cadastro já devolve o token, então a pessoa entra direto.
-      navigate('/admin', { replace: true });
+      navigate('/', { replace: true });
     } catch (err) {
       setSubmitError(
         err instanceof ApiError
@@ -152,10 +152,10 @@ export function RegisterPage() {
 
   return (
     <Card>
-      <h1>Criar conta de docente</h1>
+      <h1>Criar conta</h1>
       <p>
-        Preencha seus dados para publicar no blog. Se você recebeu um código de
-        convite, informe-o no final — não é obrigatório.
+        Sem convite, sua conta será de estudante, com acesso à leitura.
+        Professores precisam de um convite válido para publicar e administrar.
       </p>
 
       {submitError && <Alert>{submitError}</Alert>}
@@ -176,7 +176,7 @@ export function RegisterPage() {
             <FieldError id="erro-name">{errors.name}</FieldError>
           ) : (
             <Hint id="dica-name">
-              É o nome que aparece como autor(a) nos posts.
+              Informe o nome usado para identificar sua conta.
             </Hint>
           )}
         </Field>
@@ -230,7 +230,7 @@ export function RegisterPage() {
             <FieldError id="erro-code">{errors.code}</FieldError>
           ) : (
             <Hint id="dica-code">
-              Preencha só se alguém enviou um convite para você.
+              Um convite válido concede o perfil de professor.
             </Hint>
           )}
         </Field>

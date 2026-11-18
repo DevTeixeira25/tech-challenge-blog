@@ -27,10 +27,10 @@ services:
       db:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-development}
       PORT: 3000
       DATABASE_URL: postgresql://blog:blog@db:5432/blog?schema=public
-      # Em produção, troque por um valor aleatório e longo (ver .env.example).
+      # Ambiente local por padrão. Em produção, configure NODE_ENV e segredo próprio.
       JWT_SECRET: ${JWT_SECRET:-dev-secret-troque-em-producao}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
     ports:

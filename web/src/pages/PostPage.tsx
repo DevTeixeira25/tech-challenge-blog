@@ -66,7 +66,7 @@ const EditBar = styled.div`
 /** Página de leitura: mostra o conteúdo completo de um post. */
 export function PostPage() {
   const { id = '' } = useParams();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
 
   const fetchPost = useCallback(
     (signal: AbortSignal) => postsService.getById(id, signal),
@@ -112,7 +112,7 @@ export function PostPage() {
 
           <Content>{post.content}</Content>
 
-          {isAuthenticated && (
+          {user?.role === 'TEACHER' && (
             <EditBar>
               <ButtonLink to={`/posts/${post.id}/editar`} $variant="secondary">
                 Editar este post

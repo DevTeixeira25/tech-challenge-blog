@@ -1,7 +1,79 @@
+> Verificação integrada Fase 4: 77 testes da API e 17 fluxos de interface aprovados localmente. A gravação usa React Native Web; validação Android/iOS físico ainda pendente.
+
 # Blog dos Docentes — Tech Challenge FIAP
 
+**Autor:** Jefferson de Oliveira da Costa Teixeira.
+
+## Fase 4 — Aplicativo React Native
+
+Aplicativo em **React Native + Expo 58 + TypeScript**, com componentes funcionais, hooks e Expo Router em [`mobile/`](mobile/). Consome a API Node.js/Express existente e o PostgreSQL via Prisma. Professores autenticados gerenciam posts, professores e alunos; estudantes consultam e pesquisam publicações. A lista exibe título, autor e descrição breve; a leitura mostra o conteúdo completo.
+
+A Fase 4 acrescenta perfis `TEACHER`/`STUDENT`, gestão paginada de pessoas e autorização na API com consulta ao perfil atual no banco. Cadastro público sem convite cria estudante; cadastro docente exige professor autenticado ou convite válido. A SPA em [`web/`](web/) e os documentos anteriores são preservados como histórico.
+
+| Documento atual | Conteúdo |
+| --- | --- |
+| [Arquitetura, configuração e uso](docs/FASE4_ARQUITETURA.md) | Mobile/API/banco, ambiente, URLs por dispositivo, contratos REST e guia de uso. |
+| [Entrega e aceite](docs/FASE4_ENTREGA.md) | Mapeamento de todos os requisitos, campos, evidências de verificação e roteiro de vídeo de 14min30s. |
+| [Decisões e experiências](docs/FASE4_RELATO.md) | Relato de Jefferson de Oliveira da Costa Teixeira com os desafios efetivamente observados. |
+| [README do aplicativo](mobile/README.md) | Instruções específicas do projeto Expo. |
+
+### Início rápido da Fase 4
+
+Pré-requisitos: Node.js 20+, npm, PostgreSQL (local ou Docker Compose) e um ambiente para executar o Expo.
+
+Na raiz, configure a conexão e aplique as migrações antes de iniciar a API:
+
+```powershell
+npm install
+Copy-Item .env.example .env
+docker compose up -d db
+npm run prisma:generate
+npm run prisma:deploy
+npm run seed
+npm run dev
+```
+
+O exemplo usa API em `http://localhost:3000` e PostgreSQL em `localhost:5433`. Para banco próprio, ajuste `DATABASE_URL` e dispense o comando que inicia o banco Docker. Configure também `JWT_SECRET` e `JWT_EXPIRES_IN`. Swagger: [documentação local da API](http://localhost:3000/docs).
+
+Em outro terminal:
+
+```powershell
+Set-Location mobile
+npm install
+Copy-Item .env.example .env
+npm start
+```
+
+Configure `EXPO_PUBLIC_API_URL` em `mobile/.env`: `http://localhost:3000` no navegador do computador, `http://10.0.2.2:3000` no emulador Android padrão ou `http://<IP-LAN-DO-COMPUTADOR>:3000` em celular na mesma rede. Reinicie o Expo após alterar a variável. O Compose da raiz não inicia o aplicativo móvel; localmente usa `NODE_ENV=${NODE_ENV:-development}` por padrão. Consulte o guia para os detalhes de rede e plataforma.
+
+Após o seed da Fase 4, use `ana@blog.dev` / `senha123` como docente ou `aluno@blog.dev` / `aluno1234` como estudante. A senha docente é legada; novas senhas exigem ao menos 8 caracteres e no máximo 72 bytes UTF-8. O login preserva compatibilidade com senhas legadas a partir de 6 caracteres. Há registros adicionais para demonstrar paginação.
+
+### Uso e decisões de autenticação
+
+- Visitante/estudante: abrir a lista, buscar e ler publicações.
+- Professor: entrar, administrar posts e cadastrar/editar/excluir professores e alunos. Os formulários de edição carregam os valores atuais; nova senha é opcional na edição de pessoas.
+- Professores e alunos têm listagens paginadas com ações de editar/excluir. O professor pode editar o próprio cadastro; autoexclusão docente é bloqueada.
+- As operações protegidas exigem JWT e perfil docente conferido no servidor. Estudante recebe 403 ao tentar gestão; token de usuário removido perde acesso.
+- No nativo, a sessão usa SecureStore; na versão web do aplicativo, o token fica em memória e recarregar exige novo login.
+
+### Situação da entrega
+
+Em 18/11/2026 foram confirmados: API com **77 testes em 6 suítes**, build e lint aprovados; seed executado duas vezes sem duplicação; mobile SDK 58 com typecheck, lint e exportação web aprovados, além de **Expo Doctor 20/20**. A revisão estática tratou sessão/401, carregamento e confirmação via Modal. A verificação integrada no Chrome aprovou 17 fluxos com API e PostgreSQL reais, sem erros JavaScript de página.
+
+**Testes de integração exigem banco isolado.** Eles limpam tabelas, e `jest.safety.js` bloqueia bancos sem o segmento `test` no nome; o CI usa `blog_test`. Configure a `DATABASE_URL` para um banco descartável, como `blog_fase4_test`, antes de aplicar migrações e executar a suíte. Siga o [guia de testes](docs/FASE4_ARQUITETURA.md#verificação-e-banco-isolado).
+
+Ainda não houve teste em aparelhos físicos Android/iOS nem geração/instalação de binário nativo. Após ajustes compatíveis, a auditoria npm permanece com 46 ocorrências na raiz (44 altas, 2 moderadas) e 42 no mobile (40 altas, 2 moderadas), incluindo apontamentos herdados/de desenvolvimento; entre os da raiz estão Zod 3 e qs. Não foi aplicada correção forçada incompatível. Esses resultados não atestam prontidão para produção.
+
+O [checklist da Fase 4](docs/FASE4_ENTREGA.md) detalha resultados e limites sem reutilizar cobertura histórica. A [demonstração gravada](docs/media/demonstracao-fase4.webm) tem 2min16s, usa React Native Web e apresenta legendas sem áudio. O roteiro de 14min30s é uma alternativa para apresentação narrada. [Relato do autor](docs/FASE4_RELATO.md) e [documentação em PDF](docs/documentacao-fase4.pdf) acompanham a entrega. Código da fase: branch `codex/fase4-mobile-20261118`, preparada para revisão antes de integrar à main.
+
+A documentação abaixo é o histórico da API e da SPA das fases anteriores. Instruções e resultados históricos de testes não atestam a validação da Fase 4; em caso de divergência, consulte os documentos FASE4, especialmente as regras atuais de perfis e cadastro.
+
+---
+
+## Histórico — Fases anteriores (API e SPA web)
+
 Plataforma de blogging para professores(as) da rede pública: docentes publicam
-aulas e materiais, estudantes leem e buscam os posts. O repositório reúne as
+aulas e materiais, estudantes leem e buscam os posts. O histórico abaixo descreve as
 duas partes da aplicação:
 
 - **API REST** (Node.js + TypeScript + PostgreSQL), na raiz;
@@ -205,7 +277,7 @@ Base: `http://localhost:3000`
 | Método   | Rota             | Acesso   | Descrição                                     |
 | -------- | ---------------- | -------- | --------------------------------------------- |
 | `POST`   | `/auth/login`    | Público  | Autentica o(a) docente e devolve o token JWT  |
-| `POST`   | `/auth/register` | Público  | Cadastra um(a) docente (convite opcional)     |
+| `POST`   | `/auth/register` | Público  | Cria estudante; convite válido cria docente |
 | `GET`    | `/auth/me`       | Token    | Dados do(a) docente autenticado(a)            |
 | `POST`   | `/auth/invites`  | Token    | Gera um convite para um(a) novo(a) docente    |
 | `GET`    | `/auth/invites`  | Token    | Lista os convites gerados                     |
@@ -310,7 +382,7 @@ entrega quais e-mails existem.
 > cumpridas pelo JWT e pelo `requireAuth`. O que vem abaixo responde uma pergunta
 > que o enunciado deixa em aberto: como entra quem ainda não tem conta.
 
-**Cadastro aberto.** Em `/cadastro` (ou `POST /auth/register`) a pessoa informa
+**Cadastro aberto de estudante (regra atual da Fase 4).** Em `/cadastro` (ou `POST /auth/register`) a pessoa informa
 nome, e-mail e senha e já entra logada — o endpoint devolve o token junto com os
 dados do usuário, sem precisar passar pelo login em seguida.
 
@@ -334,10 +406,7 @@ pessoa convidada ──POST /auth/register (nome, e-mail, senha, código)──�
   outro e-mail) recusa o cadastro com **400**; sem código, o cadastro segue
   normalmente.
 
-Como o cadastro é aberto, o convite não funciona como barreira de acesso: ele
-serve para indicar alguém nominalmente e registrar quem entrou por indicação.
-Para fechar o cadastro e voltar a exigir convite, basta tornar o `code`
-obrigatório no `registerSchema` e no `register` do `auth.service.ts`.
+Na Fase 4, o cadastro sem convite cria STUDENT e não permite publicar. Um convite válido cria TEACHER; professores também podem cadastrar docentes pela gestão autenticada. As descrições de cadastro e perfil único dos documentos históricos refletem fases anteriores.
 
 ## Swagger
 
@@ -346,6 +415,8 @@ http://localhost:3000/docs. Dá para explorar e testar todos os endpoints por al
 sem precisar de Postman ou curl.
 
 ## Testes
+
+> Nota atual da Fase 4: use um banco exclusivo de teste, como `blog_fase4_test`, antes de executar integração. A proteção em `jest.safety.js` recusa outros bancos; o banco comum do `.env` não serve para esta suíte. Os números de cobertura abaixo são históricos.
 
 Os testes usam Jest para os unitários e Supertest para os de integração. O
 mínimo de 20% de cobertura exigido no desafio está garantido pelo

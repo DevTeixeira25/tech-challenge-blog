@@ -161,6 +161,24 @@ describe('Convites e cadastro (e2e)', () => {
     await prisma.user.deleteMany({ where: { email: 'convidado@blog.dev' } });
   });
 
+  it('um convite só cria um docente mesmo com cadastros concorrentes', async () => {
+    const token = await loginToken();
+    const invite = await request(app).post('/auth/invites')
+      .set({ Authorization: `Bearer ${token}` }).send({});
+    const results = await Promise.all(['concorrente1@blog.dev', 'concorrente2@blog.dev'].map((email) =>
+      request(app).post('/auth/register').send({
+        name: 'Docente Concorrente', email, password: 'senhaforte1', code: invite.body.code,
+      }),
+    ));
+    expect(results.map((result) => result.status).sort()).toEqual([201, 400]);
+    const accounts = await prisma.user.findMany({ where: { email: { in: ['concorrente1@blog.dev', 'concorrente2@blog.dev'] } } });
+    expect(accounts).toHaveLength(1);
+    expect(accounts[0].role).toBe('TEACHER');
+    const used = await prisma.invite.findUniqueOrThrow({ where: { id: invite.body.id } });
+    expect(used.usedBy).toBe(accounts[0].id);
+    await prisma.user.deleteMany({ where: { id: accounts[0].id } });
+  });
+
   it('POST /auth/register cria a conta sem informar convite', async () => {
     const res = await request(app).post('/auth/register').send({
       name: 'Prof. Sem Convite',
@@ -170,15 +188,16 @@ describe('Convites e cadastro (e2e)', () => {
 
     expect(res.status).toBe(201);
     expect(res.body.user.email).toBe('semconvite@blog.dev');
+    expect(res.body.user.role).toBe('STUDENT');
     expect(typeof res.body.token).toBe('string');
 
-    // E o token já serve para publicar.
+    // Estudante tem acesso ao perfil, mas não pode publicar.
     const post = await request(app)
       .post('/posts')
       .set({ Authorization: `Bearer ${res.body.token}` })
       .send({ title: 'Oi', content: 'texto', author: 'Prof. Sem Convite' });
 
-    expect(post.status).toBe(201);
+    expect(post.status).toBe(403);
 
     await prisma.post.deleteMany();
     await prisma.user.deleteMany({ where: { email: 'semconvite@blog.dev' } });

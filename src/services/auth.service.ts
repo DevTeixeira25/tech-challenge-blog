@@ -1,7 +1,7 @@
 import { randomInt } from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { Invite } from '@prisma/client';
+import { Invite, Role } from '@prisma/client';
 import { env } from '../config/env';
 import { AppError, ConflictError, UnauthorizedError } from '../errors/AppError';
 import {
@@ -23,6 +23,7 @@ export interface PublicUser {
   id: string;
   name: string;
   email: string;
+  role: Role;
 }
 
 export interface LoginResult {
@@ -35,6 +36,7 @@ export interface TokenPayload {
   sub: string;
   name: string;
   email: string;
+  role: Role;
 }
 
 /** Convite como ele aparece na API (com a situação já calculada). */
@@ -102,17 +104,15 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role,
     };
 
     return { token: this.signToken(publicUser), user: publicUser };
   }
 
   /**
-   * Cadastro de um(a) novo(a) docente.
-   *
-   * O cadastro é aberto: nome, e-mail e senha bastam. O código de convite é
-   * opcional — quem recebeu um informa aqui, o convite é validado e marcado
-   * como usado, o que mantém o registro de quem entrou por indicação.
+   * Cadastro público cria estudante. Um convite válido e de uso único
+   * permite criar uma conta docente; o perfil nunca vem do corpo da requisição.
    */
   async register({
     name,
@@ -134,16 +134,14 @@ export class AuthService {
       name,
       email: normalizedEmail,
       passwordHash: await bcrypt.hash(password, 10),
-    });
-
-    if (invite) {
-      await this.invites.markAsUsed(invite.id, user.id);
-    }
+      role: invite ? Role.TEACHER : Role.STUDENT,
+    }, invite?.id);
 
     const publicUser: PublicUser = {
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role,
     };
 
     // Já devolve o token: quem acabou de se cadastrar entra direto.
@@ -205,7 +203,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedError('Usuário do token não existe mais');
     }
-    return { id: user.id, name: user.name, email: user.email };
+    return { id: user.id, name: user.name, email: user.email, role: user.role };
   }
 
   private signToken(user: PublicUser): string {
@@ -213,6 +211,7 @@ export class AuthService {
       sub: user.id,
       name: user.name,
       email: user.email,
+      role: user.role,
     };
 
     return jwt.sign(payload, env.JWT_SECRET, {
@@ -226,7 +225,11 @@ export const authService = new AuthService();
 /** Verifica um token e devolve o payload; lança 401 se for inválido/expirado. */
 export function verifyToken(token: string): TokenPayload {
   try {
-    return jwt.verify(token, env.JWT_SECRET) as TokenPayload;
+    const payload = jwt.verify(token, env.JWT_SECRET);
+    if (typeof payload === 'string' || typeof payload.sub !== 'string' || !payload.sub) {
+      throw new UnauthorizedError('Token inválido ou expirado');
+    }
+    return payload as TokenPayload;
   } catch {
     throw new UnauthorizedError('Token inválido ou expirado');
   }

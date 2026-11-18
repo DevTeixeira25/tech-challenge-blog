@@ -39,6 +39,16 @@ export function errorHandler(
     });
   }
 
+  if (
+    err instanceof Prisma.PrismaClientKnownRequestError &&
+    err.code === 'P2002'
+  ) {
+    return res.status(409).json({
+      error: 'ConflictError',
+      message: 'Já existe uma conta com este e-mail',
+    });
+  }
+
   // Registro inexistente no Prisma (ex.: update/delete de id inválido)
   if (
     err instanceof Prisma.PrismaClientKnownRequestError &&

@@ -53,12 +53,12 @@ function resolveRedirect(state: unknown): string {
   if (typeof from === 'string') return from;
   if (from?.pathname) return from.pathname;
 
-  return '/admin';
+  return '/';
 }
 
 /** Página de login dos(as) docentes. */
 export function LoginPage() {
-  const { login, isAuthenticated, loading } = useAuth();
+  const { user, login, isAuthenticated, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +74,7 @@ export function LoginPage() {
 
   // Já autenticado: não faz sentido mostrar o formulário de novo.
   if (isAuthenticated) {
-    return <Navigate to={redirectTo} replace />;
+    return <Navigate to={user?.role === 'TEACHER' ? redirectTo : '/'} replace />;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -97,10 +97,10 @@ export function LoginPage() {
 
   return (
     <Card>
-      <h1>Área do(a) docente</h1>
+      <h1>Entrar no blog</h1>
       <p>
-        Entre para criar, editar e excluir postagens. A leitura do blog é aberta
-        a todos(as).
+        Professores podem publicar e administrar. Estudantes têm acesso à leitura
+        das postagens, que também está disponível sem login.
       </p>
 
       {error && <Alert>{error}</Alert>}

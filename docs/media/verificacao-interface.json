@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-18",
+  "renderer": "React Native Web, Chrome, viewport430x804",
+  "api": "Node.js + PostgreSQL local real",
+  "checks": [
+    "home pública integrada",
+    "busca REST e leitura completa",
+    "perfil estudante e bloqueio de rota",
+    "login docente e painel",
+    "criação de post via interface",
+    "edição e pré-carregamento post",
+    "cancelamento e exclusão confirmada de post",
+    "paginação de professores",
+    "criação de professores",
+    "edição de professores",
+    "exclusão de professores",
+    "paginação de alunos",
+    "criação de alunos",
+    "edição de alunos",
+    "exclusão de alunos",
+    "erro de rede e recuperação",
+    "API rejeita escrita de aluno com403"
+  ],
+  "pageErrors": [],
+  "nativeDeviceTested": false
+}

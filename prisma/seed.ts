@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { newPasswordSchema } from '../src/schemas/password.schema';
 
 const prisma = new PrismaClient();
 
@@ -24,44 +25,43 @@ const posts = [
   },
 ];
 
-// Senhas em texto claro só aqui, para o ambiente de desenvolvimento:
-// no banco é gravado apenas o hash bcrypt.
-const teachers = [
-  { name: 'Prof. Ana Souza', email: 'ana@blog.dev', password: 'senha123' },
-  { name: 'Prof. Carlos Lima', email: 'carlos@blog.dev', password: 'senha123' },
+// Contas exclusivas de demonstração; repetir o seed preserva todas as contas existentes.
+const people = [
+  { name: 'Prof. Ana Souza', email: 'ana@blog.dev', password: 'senha123', role: Role.TEACHER },
+  { name: 'Prof. Carlos Lima', email: 'carlos@blog.dev', password: 'senha123', role: Role.TEACHER },
+  { name: 'Aluno Demonstração', email: 'aluno@blog.dev', password: 'aluno1234', role: Role.STUDENT },
+  ...Array.from({ length: 12 }, (_, index) => ({
+    name: `Docente Exemplo ${String(index + 1).padStart(2, '0')}`,
+    email: `docente${index + 1}@demo.blog.dev`, password: 'docente123', role: Role.TEACHER,
+  })),
+  ...Array.from({ length: 12 }, (_, index) => ({
+    name: `Estudante Exemplo ${String(index + 1).padStart(2, '0')}`,
+    email: `estudante${index + 1}@demo.blog.dev`, password: 'estudante123', role: Role.STUDENT,
+  })),
 ];
 
 async function main() {
-  console.log('Populando o banco com docentes e posts de exemplo...');
-
-  // Limpa antes para o seed poder rodar mais de uma vez sem duplicar
-  await prisma.post.deleteMany();
-  await prisma.user.deleteMany();
-
-  for (const teacher of teachers) {
-    const passwordHash = await bcrypt.hash(teacher.password, 10);
-    const created = await prisma.user.create({
-      data: {
-        name: teacher.name,
-        email: teacher.email,
-        passwordHash,
-      },
+  console.log('Adicionando pessoas e posts de demonstração sem excluir dados...');
+  for (const person of people) {
+    const { password, ...data } = person;
+    newPasswordSchema.parse(password);
+    await prisma.user.upsert({
+      where: { email: data.email }, update: {},
+      create: { ...data, passwordHash: await bcrypt.hash(password, 10) },
     });
-    console.log(`  docente: ${created.email} (senha: ${teacher.password})`);
+    console.log(`  ${data.role}: ${data.email} (senha inicial: ${password})`);
   }
-
   for (const post of posts) {
-    const created = await prisma.post.create({ data: post });
-    console.log(`  criado: ${created.title}`);
+    const existing = await prisma.post.findFirst({ where: { title: post.title, author: post.author } });
+    if (!existing) await prisma.post.create({ data: post });
   }
-
-  console.log('Seed concluido.');
+  console.log('Seed concluído. Contas existentes mantêm suas credenciais e perfis.');
 }
 
 main()
   .catch((e) => {
     console.error('Erro no seed:', e);
-    process.exit(1);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();
