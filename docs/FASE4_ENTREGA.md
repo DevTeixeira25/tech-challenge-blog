@@ -5,7 +5,7 @@
 - Configuração, arquitetura e uso: [FASE4_ARQUITETURA.md](FASE4_ARQUITETURA.md) e [README raiz](../README.md).
 - Decisões e relato: [FASE4_RELATO.md](FASE4_RELATO.md).
 - Vídeo: [demonstração legendada](media/demonstracao-fase4.webm), **2min16s**, sem áudio, renderizador React Native Web.
-- Código da Fase 4: branch `codex/fase4-mobile-20261118`, para revisão antes de integrar à main.
+- Código da Fase 4: [branch codex/fase4-mobile-20261118](https://github.com/DevTeixeira25/tech-challenge-blog/tree/codex/fase4-mobile-20261118), publicada para revisão antes de integrar à main.
 
 As caixas abaixo registram o aceite local. A descrição de uma implementação não equivale a aprovação do critério. Marque somente após verificar o comportamento e registrar a evidência real.
 
