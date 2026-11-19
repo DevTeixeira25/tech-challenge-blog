@@ -8,7 +8,7 @@ import { Loading } from './ui/Feedback';
  * devolvê-la ao destino logo após entrar.
  */
 export function ProtectedRoute() {
-  const { isAuthenticated, loading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
   // Enquanto o token guardado está sendo revalidado, não dá para decidir.
@@ -18,6 +18,10 @@ export function ProtectedRoute() {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (user?.role !== 'TEACHER') {
+    return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

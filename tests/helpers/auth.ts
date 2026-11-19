@@ -15,11 +15,12 @@ export async function createTestTeacher() {
   const passwordHash = await bcrypt.hash(testTeacher.password, 10);
   return prisma.user.upsert({
     where: { email: testTeacher.email },
-    update: { passwordHash, name: testTeacher.name },
+    update: { passwordHash, name: testTeacher.name, role: 'TEACHER' },
     create: {
       name: testTeacher.name,
       email: testTeacher.email,
       passwordHash,
+      role: 'TEACHER',
     },
   });
 }

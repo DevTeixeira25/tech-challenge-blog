@@ -1,17 +1,63 @@
+/** Operações administrativas com perfil fixo conforme a rota. */
+function personPaths(path: string, label: string) {
+  const security = [{ bearerAuth: [] }];
+  const content = (schema: string) => ({ 'application/json': { schema: { $ref: `#/components/schemas/${schema}` } } });
+  const errors = {
+    400: { description: 'Dados inválidos; role não é aceito no corpo' },
+    401: { description: 'Token ausente/inválido ou usuário removido' },
+    403: { description: 'Somente docentes podem gerenciar pessoas' },
+  };
+  return {
+    [path]: {
+      get: {
+        tags: ['People'], summary: `Lista ${label} com paginação`, security,
+        parameters: [
+          { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 1000000, default: 1 } },
+          { name: 'pageSize', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 10 } },
+        ],
+        responses: { 200: { description: 'Página de pessoas sem hashes de senha', content: content('PeoplePage') }, ...errors },
+      },
+      post: {
+        tags: ['People'], summary: `Cria conta de ${label}`, security,
+        requestBody: { required: true, content: content('PersonInput') },
+        responses: { 201: { description: 'Pessoa criada', content: content('User') }, 409: { description: 'E-mail já cadastrado' }, ...errors },
+      },
+    },
+    [`${path}/{id}`]: {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', format: 'uuid' } }],
+      get: {
+        tags: ['People'], summary: `Consulta conta de ${label}`, security,
+        responses: { 200: { description: 'Pessoa encontrada', content: content('User') }, 404: { description: 'Pessoa não encontrada neste perfil' }, ...errors },
+      },
+      put: {
+        tags: ['People'], summary: `Atualiza conta de ${label}`, security,
+        requestBody: { required: true, content: content('PersonUpdate') },
+        responses: { 200: { description: 'Pessoa atualizada', content: content('User') }, 404: { description: 'Pessoa não encontrada neste perfil' }, 409: { description: 'E-mail já cadastrado' }, ...errors },
+      },
+      delete: {
+        tags: ['People'], summary: `Exclui conta de ${label}`, security,
+        responses: { 204: { description: 'Pessoa excluída' }, 404: { description: 'Pessoa não encontrada neste perfil' }, 409: { description: 'Docente não pode excluir a própria conta nem deixar a escola sem docentes' }, ...errors },
+      },
+    },
+  };
+}
+const peoplePaths = { ...personPaths('/teachers', 'docentes'), ...personPaths('/students', 'estudantes') };
+
 /** Especificação OpenAPI 3.0 da API de blogging. Servida em /docs. */
 export const openapiSpec = {
   openapi: '3.0.3',
   info: {
     title: 'API de Blogging — Tech Challenge FIAP',
-    version: '1.0.8',
+    version: '4.0.0',
     description:
       'API REST para postagens de docentes da rede pública de educação. ' +
       'A leitura é pública; criar, editar e excluir exige o token JWT ' +
-      'obtido em POST /auth/login.',
+      'obtido em POST /auth/login e perfil TEACHER atual no banco. Estudantes consultam posts.',
   },
   servers: [{ url: '/', description: 'Servidor atual' }],
   tags: [
-    { name: 'Auth', description: 'Autenticação dos docentes' },
+    { name: 'Auth', description: 'Autenticação de docentes e estudantes' },
+    { name: 'People', description: 'Gestão de docentes e estudantes (somente TEACHER)' },
     { name: 'Posts', description: 'Gerenciamento de postagens' },
   ],
   components: {
@@ -63,7 +109,33 @@ export const openapiSpec = {
         properties: {
           id: { type: 'string', format: 'uuid' },
           name: { type: 'string', example: 'Prof. Ana Souza' },
+          role: { type: 'string', enum: ['TEACHER', 'STUDENT'] },
           email: { type: 'string', format: 'email', example: 'ana@blog.dev' },
+        },
+      },
+      PersonInput: {
+        type: 'object', additionalProperties: false,
+        required: ['name', 'email', 'password'],
+        properties: {
+          name: { type: 'string', minLength: 3, maxLength: 120 },
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string', format: 'password', minLength: 8, maxLength: 72, description: 'Máximo de 72 bytes em UTF-8' },
+        },
+      },
+      PersonUpdate: {
+        type: 'object', additionalProperties: false, minProperties: 1,
+        properties: {
+          name: { type: 'string', minLength: 3, maxLength: 120 },
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string', format: 'password', minLength: 8, maxLength: 72, description: 'Máximo de 72 bytes em UTF-8' },
+        },
+      },
+      PeoplePage: {
+        type: 'object', required: ['items', 'page', 'pageSize', 'total', 'totalPages'],
+        properties: {
+          items: { type: 'array', items: { $ref: '#/components/schemas/User' } },
+          page: { type: 'integer' }, pageSize: { type: 'integer' },
+          total: { type: 'integer' }, totalPages: { type: 'integer' },
         },
       },
       LoginResponse: {
@@ -83,13 +155,15 @@ export const openapiSpec = {
             type: 'string',
             format: 'password',
             minLength: 8,
+            maxLength: 72,
+            description: 'Máximo de 72 bytes em UTF-8',
             example: 'minhasenhaforte',
           },
           code: {
             type: 'string',
             description:
               'Opcional. Código de convite, quando a pessoa recebeu um: ' +
-              'o convite é validado e marcado como usado.',
+              'o convite válido cria TEACHER e é consumido. Sem código cria STUDENT.',
             example: 'K7HQ-3MTP-XB29',
           },
         },
@@ -148,10 +222,11 @@ export const openapiSpec = {
     },
   },
   paths: {
+    ...peoplePaths,
     '/auth/login': {
       post: {
         tags: ['Auth'],
-        summary: 'Autentica um(a) docente e devolve o token JWT',
+        summary: 'Autentica docente ou estudante e devolve token e perfil',
         requestBody: {
           required: true,
           content: {
@@ -178,16 +253,17 @@ export const openapiSpec = {
             },
           },
           401: { $ref: '#/components/responses/Unauthorized' },
+          403: { description: 'Perfil sem permissão para esta operação' },
         },
       },
     },
     '/auth/register': {
       post: {
         tags: ['Auth'],
-        summary: 'Cadastra um(a) docente',
+        summary: 'Cadastra estudante ou docente convidado',
         description:
-          'Nome, e-mail e senha bastam. O código de convite é opcional: ' +
-          'quando informado, precisa ser válido e é marcado como usado. ' +
+          'Sem convite, cria STUDENT. Um convite válido cria TEACHER e é consumido. ' +
+          'O cliente não pode escolher o perfil. ' +
           'Em caso de sucesso já devolve o token, então quem se cadastra ' +
           'entra direto.',
         requestBody: {
@@ -200,7 +276,7 @@ export const openapiSpec = {
         },
         responses: {
           201: {
-            description: 'Docente cadastrado e autenticado',
+            description: 'Pessoa cadastrada e autenticada',
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/LoginResponse' },
@@ -250,6 +326,7 @@ export const openapiSpec = {
             },
           },
           401: { $ref: '#/components/responses/Unauthorized' },
+          403: { description: 'Perfil sem permissão para esta operação' },
         },
       },
       get: {
@@ -269,17 +346,18 @@ export const openapiSpec = {
             },
           },
           401: { $ref: '#/components/responses/Unauthorized' },
+          403: { description: 'Perfil sem permissão para esta operação' },
         },
       },
     },
     '/auth/me': {
       get: {
         tags: ['Auth'],
-        summary: 'Dados do(a) docente autenticado(a)',
+        summary: 'Perfil atual da pessoa autenticada, incluindo role',
         security: [{ bearerAuth: [] }],
         responses: {
           200: {
-            description: 'Perfil do(a) docente',
+            description: 'Perfil atual no banco',
             content: {
               'application/json': {
                 schema: { $ref: '#/components/schemas/User' },
@@ -287,6 +365,7 @@ export const openapiSpec = {
             },
           },
           401: { $ref: '#/components/responses/Unauthorized' },
+          403: { description: 'Perfil sem permissão para esta operação' },
         },
       },
     },
@@ -338,6 +417,7 @@ export const openapiSpec = {
             },
           },
           401: { $ref: '#/components/responses/Unauthorized' },
+          403: { description: 'Perfil sem permissão para esta operação' },
         },
       },
     },
@@ -416,6 +496,7 @@ export const openapiSpec = {
             },
           },
           401: { $ref: '#/components/responses/Unauthorized' },
+          403: { description: 'Perfil sem permissão para esta operação' },
           404: { description: 'Post não encontrado' },
         },
       },
@@ -426,6 +507,7 @@ export const openapiSpec = {
         responses: {
           204: { description: 'Post excluído (sem conteúdo)' },
           401: { $ref: '#/components/responses/Unauthorized' },
+          403: { description: 'Perfil sem permissão para esta operação' },
           404: { description: 'Post não encontrado' },
         },
       },

@@ -17,6 +17,7 @@ export interface PostInput {
 
 /** Docente autenticado (POST /auth/login e GET /auth/me). */
 export interface User {
+  role: 'TEACHER' | 'STUDENT';
   id: string;
   name: string;
   email: string;

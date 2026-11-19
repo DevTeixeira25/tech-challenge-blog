@@ -133,7 +133,7 @@ export function Header() {
             Posts
           </NavItem>
 
-          {isAuthenticated && (
+          {user?.role === 'TEACHER' && (
             <>
               <NavItem to="/admin" onClick={closeMenu}>
                 Administração

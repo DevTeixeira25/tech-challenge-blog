@@ -1,0 +1,901 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@expo/cli": {
+      "name": "@expo/cli",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@expo/config",
+        "@expo/config-plugins",
+        "@expo/inline-modules",
+        "@expo/metro",
+        "@expo/metro-config",
+        "@expo/metro-file-map",
+        "@expo/prebuild-config",
+        "picomatch",
+        "tinyglobby"
+      ],
+      "effects": [
+        "expo"
+      ],
+      "range": "<=0.0.0-canary-20231123-1b19f96-4 || 0.0.1-canary-20231125-d600e44 - 0.0.1-canary-20240418-8d74597 || >=0.17.2",
+      "nodes": [
+        "node_modules/expo/node_modules/@expo/cli"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@expo/config": {
+      "name": "@expo/config",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@expo/config-plugins"
+      ],
+      "effects": [
+        "@expo/cli",
+        "@expo/local-build-cache-provider",
+        "@expo/metro-config",
+        "@expo/prebuild-config",
+        "expo"
+      ],
+      "range": "11.0.6-canary-20250428-4156f88 || >=58.0.11",
+      "nodes": [
+        "node_modules/@expo/config"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@expo/config-plugins": {
+      "name": "@expo/config-plugins",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "tinyglobby"
+      ],
+      "effects": [
+        "@expo/cli",
+        "@expo/config",
+        "@expo/inline-modules",
+        "@expo/prebuild-config",
+        "expo"
+      ],
+      "range": ">=58.0.12",
+      "nodes": [
+        "node_modules/@expo/config-plugins"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@expo/inline-modules": {
+      "name": "@expo/inline-modules",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@expo/config-plugins"
+      ],
+      "effects": [
+        "@expo/cli"
+      ],
+      "range": ">=0.2.9",
+      "nodes": [
+        "node_modules/@expo/inline-modules"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@expo/local-build-cache-provider": {
+      "name": "@expo/local-build-cache-provider",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@expo/config"
+      ],
+      "effects": [
+        "expo"
+      ],
+      "range": ">=58.0.11",
+      "nodes": [
+        "node_modules/@expo/local-build-cache-provider"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@expo/metro": {
+      "name": "@expo/metro",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "metro",
+        "metro-config",
+        "metro-file-map",
+        "metro-transform-worker"
+      ],
+      "effects": [
+        "@expo/cli",
+        "@expo/metro-config",
+        "expo"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@expo/metro"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@expo/metro-config": {
+      "name": "@expo/metro-config",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@expo/config",
+        "@expo/metro",
+        "picomatch",
+        "tinyglobby"
+      ],
+      "effects": [
+        "@expo/cli",
+        "expo"
+      ],
+      "range": ">=0.21.0-canary-20250630-547cd82",
+      "nodes": [
+        "node_modules/@expo/metro-config"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@expo/metro-file-map": {
+      "name": "@expo/metro-file-map",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "jest-worker"
+      ],
+      "effects": [
+        "@expo/cli"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@expo/metro-file-map"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@expo/prebuild-config": {
+      "name": "@expo/prebuild-config",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@expo/config",
+        "@expo/config-plugins"
+      ],
+      "effects": [
+        "@expo/cli"
+      ],
+      "range": ">=58.0.19",
+      "nodes": [
+        "node_modules/@expo/prebuild-config"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@react-native/babel-plugin-codegen": {
+      "name": "@react-native/babel-plugin-codegen",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@react-native/codegen"
+      ],
+      "effects": [
+        "@react-native/babel-preset",
+        "babel-preset-expo"
+      ],
+      "range": "0.73.0-nightly-20230603-fd9e295be - 0.73.0-nightly-20230922-52104c6ee || >=0.84.0-nightly-20251105-5ec5cc3a3",
+      "nodes": [
+        "node_modules/@react-native/babel-plugin-codegen"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "@react-native/babel-preset": {
+      "name": "@react-native/babel-preset",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@react-native/babel-plugin-codegen"
+      ],
+      "effects": [
+        "@react-native/metro-babel-transformer"
+      ],
+      "range": "<=0.73.0-nightly-20230922-52104c6ee || >=0.84.0-nightly-20251105-5ec5cc3a3",
+      "nodes": [
+        "node_modules/@react-native/babel-preset"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "@react-native/codegen": {
+      "name": "@react-native/codegen",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "tinyglobby"
+      ],
+      "effects": [
+        "@react-native/babel-plugin-codegen",
+        "react-native"
+      ],
+      "range": ">=0.84.0-nightly-20251105-5ec5cc3a3",
+      "nodes": [
+        "node_modules/@react-native/codegen"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "@react-native/community-cli-plugin": {
+      "name": "@react-native/community-cli-plugin",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@react-native/metro-config",
+        "metro"
+      ],
+      "effects": [
+        "react-native"
+      ],
+      "range": "0.73.8 - 0.74.0-nightly-20240220-e9351f0f8 || >=0.74.1",
+      "nodes": [
+        "node_modules/@react-native/community-cli-plugin"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "@react-native/metro-babel-transformer": {
+      "name": "@react-native/metro-babel-transformer",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@react-native/babel-preset"
+      ],
+      "effects": [
+        "@react-native/metro-config"
+      ],
+      "range": ">=0.84.0-nightly-20251105-5ec5cc3a3",
+      "nodes": [
+        "node_modules/@react-native/metro-babel-transformer"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "@react-native/metro-config": {
+      "name": "@react-native/metro-config",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@react-native/metro-babel-transformer",
+        "metro-config"
+      ],
+      "effects": [
+        "@react-native/community-cli-plugin"
+      ],
+      "range": "0.73.0-nightly-20230603-fd9e295be - 0.73.0-nightly-20231002-0371014a3 || 0.73.2 - 0.74.0-nightly-20240220-e9351f0f8 || >=0.74.1",
+      "nodes": [
+        "node_modules/@react-native/metro-config"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "@react-native/virtualized-lists": {
+      "name": "@react-native/virtualized-lists",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "react-native"
+      ],
+      "effects": [
+        "react-native"
+      ],
+      "range": ">=0.85.0-nightly-20260108-1236b6be4",
+      "nodes": [
+        "node_modules/@react-native/virtualized-lists"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/eslint-plugin": {
+      "name": "@typescript-eslint/eslint-plugin",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@typescript-eslint/parser",
+        "@typescript-eslint/type-utils",
+        "@typescript-eslint/utils"
+      ],
+      "effects": [
+        "eslint-config-expo"
+      ],
+      "range": ">=8.47.1-alpha.0",
+      "nodes": [
+        "node_modules/@typescript-eslint/eslint-plugin"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-expo",
+        "version": "55.0.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/parser": {
+      "name": "@typescript-eslint/parser",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@typescript-eslint/typescript-estree"
+      ],
+      "effects": [
+        "@typescript-eslint/eslint-plugin",
+        "eslint-config-expo"
+      ],
+      "range": ">=8.47.1-alpha.0",
+      "nodes": [
+        "node_modules/@typescript-eslint/parser"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-expo",
+        "version": "55.0.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/type-utils": {
+      "name": "@typescript-eslint/type-utils",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@typescript-eslint/typescript-estree",
+        "@typescript-eslint/utils"
+      ],
+      "effects": [
+        "@typescript-eslint/eslint-plugin"
+      ],
+      "range": ">=8.47.1-alpha.0",
+      "nodes": [
+        "node_modules/@typescript-eslint/type-utils"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-expo",
+        "version": "55.0.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/typescript-estree": {
+      "name": "@typescript-eslint/typescript-estree",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "tinyglobby"
+      ],
+      "effects": [
+        "@typescript-eslint/parser",
+        "@typescript-eslint/type-utils",
+        "@typescript-eslint/utils"
+      ],
+      "range": ">=8.47.1-alpha.0",
+      "nodes": [
+        "node_modules/@typescript-eslint/typescript-estree"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-expo",
+        "version": "55.0.1",
+        "isSemVerMajor": true
+      }
+    },
+    "@typescript-eslint/utils": {
+      "name": "@typescript-eslint/utils",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@typescript-eslint/typescript-estree"
+      ],
+      "effects": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/type-utils",
+        "eslint-plugin-expo"
+      ],
+      "range": ">=8.47.1-alpha.0",
+      "nodes": [
+        "node_modules/@typescript-eslint/utils"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-expo",
+        "version": "55.0.1",
+        "isSemVerMajor": true
+      }
+    },
+    "babel-preset-expo": {
+      "name": "babel-preset-expo",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@react-native/babel-plugin-codegen"
+      ],
+      "effects": [
+        "expo"
+      ],
+      "range": ">=56.0.0-canary-20260212-4f61309",
+      "nodes": [
+        "node_modules/babel-preset-expo"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "eslint-config-expo": {
+      "name": "eslint-config-expo",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint-plugin-expo"
+      ],
+      "effects": [],
+      "range": ">=56.0.0-canary-20260212-4f61309",
+      "nodes": [
+        "node_modules/eslint-config-expo"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-expo",
+        "version": "55.0.1",
+        "isSemVerMajor": true
+      }
+    },
+    "eslint-import-resolver-typescript": {
+      "name": "eslint-import-resolver-typescript",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "tinyglobby"
+      ],
+      "effects": [],
+      "range": ">=3.8.0",
+      "nodes": [
+        "node_modules/eslint-import-resolver-typescript"
+      ],
+      "fixAvailable": true
+    },
+    "eslint-plugin-expo": {
+      "name": "eslint-plugin-expo",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "@typescript-eslint/utils"
+      ],
+      "effects": [
+        "eslint-config-expo"
+      ],
+      "range": "1.0.1-canary-20250826-f475166 - 1.0.3-canary-20260506-03817f5 || >=1.0.4-canary-20260526-13e89ca",
+      "nodes": [
+        "node_modules/eslint-plugin-expo"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-expo",
+        "version": "55.0.1",
+        "isSemVerMajor": true
+      }
+    },
+    "expo": {
+      "name": "expo",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@expo/cli",
+        "@expo/config",
+        "@expo/config-plugins",
+        "@expo/local-build-cache-provider",
+        "@expo/metro",
+        "@expo/metro-config",
+        "babel-preset-expo",
+        "expo-modules-core"
+      ],
+      "effects": [],
+      "range": "50.0.0-alpha.0 - 50.0.0-canary-20240308-6715875 || >=50.0.3",
+      "nodes": [
+        "node_modules/expo"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "expo-modules-core": {
+      "name": "expo-modules-core",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "react-native-worklets"
+      ],
+      "effects": [
+        "expo"
+      ],
+      "range": ">=58.0.20",
+      "nodes": [
+        "node_modules/expo-modules-core"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "fdir": {
+      "name": "fdir",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "picomatch"
+      ],
+      "effects": [
+        "tinyglobby"
+      ],
+      "range": ">=5.2.1",
+      "nodes": [
+        "node_modules/fdir"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "jest-util": {
+      "name": "jest-util",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "picomatch"
+      ],
+      "effects": [
+        "jest-worker"
+      ],
+      "range": ">=27.0.0-next.0",
+      "nodes": [
+        "node_modules/jest-util"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "jest-worker": {
+      "name": "jest-worker",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "jest-util"
+      ],
+      "effects": [
+        "@expo/metro-file-map",
+        "metro",
+        "metro-file-map"
+      ],
+      "range": ">=29.1.2",
+      "nodes": [
+        "node_modules/jest-worker"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "metro": {
+      "name": "metro",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "jest-worker",
+        "metro-config",
+        "metro-file-map",
+        "metro-transform-worker"
+      ],
+      "effects": [
+        "@expo/metro",
+        "@react-native/community-cli-plugin",
+        "metro-config",
+        "metro-transform-worker"
+      ],
+      "range": ">=0.71.0",
+      "nodes": [
+        "node_modules/metro"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "metro-config": {
+      "name": "metro-config",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "metro"
+      ],
+      "effects": [
+        "@expo/metro",
+        "@react-native/metro-config",
+        "metro"
+      ],
+      "range": ">=0.80.0",
+      "nodes": [
+        "node_modules/metro-config"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "metro-file-map": {
+      "name": "metro-file-map",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "jest-worker",
+        "micromatch"
+      ],
+      "effects": [
+        "@expo/metro",
+        "metro"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/metro-file-map"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "metro-transform-worker": {
+      "name": "metro-transform-worker",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "metro"
+      ],
+      "effects": [
+        "@expo/metro",
+        "metro"
+      ],
+      "range": ">=0.80.0",
+      "nodes": [
+        "node_modules/metro-transform-worker"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "micromatch": {
+      "name": "micromatch",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "picomatch"
+      ],
+      "effects": [
+        "metro-file-map"
+      ],
+      "range": ">=4.0.0",
+      "nodes": [
+        "node_modules/micromatch"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "picomatch": {
+      "name": "picomatch",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1247710,
+          "name": "picomatch",
+          "dependency": "picomatch",
+          "title": "picomatch vulnerable to ReDoS through single-branch repeated extglobs",
+          "url": "https://github.com/advisories/GHSA-fc5q-39xc-vjpf",
+          "severity": "high",
+          "cwe": [
+            "CWE-1333"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=4.0.7"
+        }
+      ],
+      "effects": [
+        "@expo/cli",
+        "@expo/metro-config",
+        "fdir",
+        "jest-util",
+        "micromatch",
+        "tinyglobby"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/jest-util/node_modules/picomatch",
+        "node_modules/micromatch/node_modules/picomatch",
+        "node_modules/picomatch"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "react-native": {
+      "name": "react-native",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@react-native/codegen",
+        "@react-native/community-cli-plugin",
+        "@react-native/virtualized-lists",
+        "tinyglobby"
+      ],
+      "effects": [
+        "@react-native/virtualized-lists",
+        "react-native-reanimated",
+        "react-native-worklets"
+      ],
+      "range": "0.73.0-nightly-20230506-1af868c52 - 0.90.0-nightly-20261118-ebc180e0a",
+      "nodes": [
+        "node_modules/react-native"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    },
+    "react-native-reanimated": {
+      "name": "react-native-reanimated",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "react-native"
+      ],
+      "effects": [],
+      "range": ">=4.7.0-nightly-20260824-0788fcdeb",
+      "nodes": [
+        "node_modules/react-native-reanimated"
+      ],
+      "fixAvailable": true
+    },
+    "react-native-worklets": {
+      "name": "react-native-worklets",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "react-native"
+      ],
+      "effects": [
+        "expo-modules-core"
+      ],
+      "range": ">=0.13.0-nightly-20260812-0f8cf6dcc",
+      "nodes": [
+        "node_modules/react-native-worklets"
+      ],
+      "fixAvailable": {
+        "name": "expo",
+        "version": "54.0.33",
+        "isSemVerMajor": true
+      }
+    },
+    "tinyglobby": {
+      "name": "tinyglobby",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "fdir",
+        "picomatch"
+      ],
+      "effects": [
+        "@expo/cli",
+        "@expo/config-plugins",
+        "@expo/metro-config",
+        "@react-native/codegen",
+        "@typescript-eslint/typescript-estree",
+        "eslint-import-resolver-typescript",
+        "react-native"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/tinyglobby"
+      ],
+      "fixAvailable": {
+        "name": "react-native",
+        "version": "0.83.10",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 40,
+      "critical": 0,
+      "total": 40
+    },
+    "dependencies": {
+      "prod": 506,
+      "dev": 258,
+      "optional": 44,
+      "peer": 14,
+      "peerOptional": 0,
+      "total": 800
+    }
+  }
+}

@@ -19,6 +19,7 @@ async function makeUser(overrides: Partial<User> = {}): Promise<User> {
     id: 'user-1',
     name: 'Prof. Teste',
     email: 'teste@blog.dev',
+    role: 'TEACHER',
     passwordHash: await bcrypt.hash(PASSWORD, 8),
     createdAt: now,
     updatedAt: now,
@@ -83,6 +84,7 @@ describe('AuthService', () => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
       });
 
       const payload = verifyToken(result.token);
@@ -123,9 +125,9 @@ describe('AuthService', () => {
       code: 'ABCD-EFGH-JKLM',
     };
 
-    it('cadastra sem código de convite: o cadastro é aberto', async () => {
+    it('cadastra estudante sem código de convite', async () => {
       repo.findByEmail.mockResolvedValue(null);
-      repo.create.mockResolvedValue(await makeUser({ id: 'user-novo' }));
+      repo.create.mockResolvedValue(await makeUser({ id: 'user-novo', role: 'STUDENT' }));
 
       const { code, ...semConvite } = validInput;
       void code;
@@ -133,6 +135,8 @@ describe('AuthService', () => {
       const result = await service.register(semConvite);
 
       expect(result.user.id).toBe('user-novo');
+      expect(result.user.role).toBe('STUDENT');
+      expect(repo.create).toHaveBeenCalledWith(expect.objectContaining({ role: 'STUDENT' }), undefined);
       expect(verifyToken(result.token).sub).toBe('user-novo');
       // Sem código informado, nem chega a consultar convites.
       expect(invites.findByCode).not.toHaveBeenCalled();
@@ -141,7 +145,7 @@ describe('AuthService', () => {
 
     it('trata código vazio como ausente', async () => {
       repo.findByEmail.mockResolvedValue(null);
-      repo.create.mockResolvedValue(await makeUser({ id: 'user-novo' }));
+      repo.create.mockResolvedValue(await makeUser({ id: 'user-novo', role: 'STUDENT' }));
 
       await service.register({ ...validInput, code: undefined });
 
@@ -157,9 +161,9 @@ describe('AuthService', () => {
           name: data.name,
           email: data.email,
           passwordHash: data.passwordHash,
+          role: data.role,
         }),
       );
-      invites.markAsUsed.mockResolvedValue(makeInvite({ usedAt: new Date() }));
 
       const result = await service.register(validInput);
 
@@ -167,9 +171,10 @@ describe('AuthService', () => {
         id: 'user-novo',
         name: validInput.name,
         email: validInput.email,
+        role: 'TEACHER',
       });
       expect(verifyToken(result.token).sub).toBe('user-novo');
-      expect(invites.markAsUsed).toHaveBeenCalledWith('invite-1', 'user-novo');
+      expect(repo.create).toHaveBeenCalledWith(expect.objectContaining({ role: 'TEACHER' }), 'invite-1');
 
       // A senha tem que ir para o banco como hash, nunca em texto claro.
       const created = repo.create.mock.calls[0][0];
@@ -183,7 +188,6 @@ describe('AuthService', () => {
       invites.findByCode.mockResolvedValue(makeInvite());
       repo.findByEmail.mockResolvedValue(null);
       repo.create.mockResolvedValue(await makeUser({ id: 'user-novo' }));
-      invites.markAsUsed.mockResolvedValue(makeInvite());
 
       await service.register({ ...validInput, code: '  abcd-efgh-jklm ' });
 
@@ -236,7 +240,6 @@ describe('AuthService', () => {
       );
       repo.findByEmail.mockResolvedValue(null);
       repo.create.mockResolvedValue(await makeUser({ id: 'user-novo' }));
-      invites.markAsUsed.mockResolvedValue(makeInvite());
 
       await expect(
         service.register({ ...validInput, email: 'NOVO@blog.dev' }),
@@ -309,6 +312,7 @@ describe('AuthService', () => {
         id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role,
       });
     });
 

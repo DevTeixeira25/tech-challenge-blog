@@ -1,5 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
+import { Role } from '@prisma/client';
+import { createPeopleRoutes } from './routes/people.routes';
 import swaggerUi from 'swagger-ui-express';
 import { postsRoutes } from './routes/posts.routes';
 import { authRoutes } from './routes/auth.routes';
@@ -25,11 +27,13 @@ export function createApp(): Application {
       docs: '/docs',
       health: '/health',
       endpoints: {
-        'POST /auth/login': 'Autentica um(a) docente e devolve o token JWT',
-        'POST /auth/register': 'Cadastra um(a) docente (codigo de convite opcional)',
-        'GET /auth/me': 'Dados do(a) docente autenticado(a)',
+        'POST /auth/login': 'Autentica docente ou estudante e devolve o token JWT',
+        'POST /auth/register': 'Cadastra estudante; convite válido cria docente',
+        'GET /auth/me': 'Dados da pessoa autenticada, incluindo perfil',
         'POST /auth/invites': 'Gera um convite (requer autenticacao)',
         'GET /auth/invites': 'Lista os convites (requer autenticacao)',
+        '/teachers': 'CRUD de docentes com paginação (apenas docentes)',
+        '/students': 'CRUD de estudantes com paginação (apenas docentes)',
         'GET /posts': 'Lista todos os posts',
         'GET /posts/search?q=': 'Busca posts por palavra-chave',
         'GET /posts/:id': 'Lê um post',
@@ -51,6 +55,8 @@ export function createApp(): Application {
   // Rotas de autenticação e de posts
   app.use('/auth', authRoutes);
   app.use('/posts', postsRoutes);
+  app.use('/teachers', createPeopleRoutes(Role.TEACHER));
+  app.use('/students', createPeopleRoutes(Role.STUDENT));
 
   // 404 e tratamento central de erros (sempre por último)
   app.use(notFoundHandler);

@@ -4,6 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   // Carrega o .env (DATABASE_URL) antes dos testes de integração
   setupFiles: ['dotenv/config'],
+  setupFilesAfterEnv: ['<rootDir>/jest.safety.js'],
   roots: ['<rootDir>/tests'],
   testMatch: ['**/*.test.ts'],
   collectCoverageFrom: [

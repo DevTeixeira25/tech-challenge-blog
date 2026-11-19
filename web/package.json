@@ -11,7 +11,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "audit:prod": "npm audit --omit=dev"
   },
   "dependencies": {
     "react": "^19.3.0",

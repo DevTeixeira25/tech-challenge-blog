@@ -25,12 +25,18 @@ model Post {
   @@map("posts")
 }
 
-/// Docente que pode entrar na área administrativa e gerenciar posts.
+enum Role {
+  TEACHER
+  STUDENT
+}
+
+/// Pessoa autenticada: docentes gerenciam o blog; estudantes consultam posts.
 model User {
   id           String   @id @default(uuid())
   name         String
   email        String   @unique
   passwordHash String
+  role         Role     @default(TEACHER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
