@@ -4,24 +4,24 @@ import { newPasswordSchema } from './password.schema';
 /** Validação do corpo do login (POST /auth/login). */
 export const loginSchema = z.object({
   email: z
-    .string({ required_error: 'email é obrigatório' })
+    .string({ error: (issue) => issue.input === undefined ? 'email é obrigatório' : undefined })
     .trim()
     .email('email inválido'),
   // Login mantém compatibilidade com senhas legadas; restrição em bytes vale para senhas novas.
   password: z
-    .string({ required_error: 'password é obrigatório' })
+    .string({ error: (issue) => issue.input === undefined ? 'password é obrigatório' : undefined })
     .min(6, 'password deve ter ao menos 6 caracteres'),
 });
 
 /** Cadastro de estudante ou, com convite válido, de docente. */
 export const registerSchema = z.object({
   name: z
-    .string({ required_error: 'name é obrigatório' })
+    .string({ error: (issue) => issue.input === undefined ? 'name é obrigatório' : undefined })
     .trim()
     .min(3, 'name deve ter ao menos 3 caracteres')
     .max(120, 'name deve ter no máximo 120 caracteres'),
   email: z
-    .string({ required_error: 'email é obrigatório' })
+    .string({ error: (issue) => issue.input === undefined ? 'email é obrigatório' : undefined })
     .trim()
     .email('email inválido'),
   // Senha nova exige mais que o login: aqui é o momento de escolher uma boa.
@@ -30,8 +30,8 @@ export const registerSchema = z.object({
   code: z
     .string()
     .trim()
-    .optional()
-    .transform((value) => (value ? value : undefined)),
+    .transform((value) => (value ? value : undefined))
+    .optional(),
 });
 
 /** Validação da geração de convite (POST /auth/invites). */

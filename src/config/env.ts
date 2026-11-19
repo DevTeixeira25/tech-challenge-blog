@@ -22,7 +22,7 @@ const parsed = envSchema.safeParse(process.env);
 if (!parsed.success) {
   console.error(
     'Variaveis de ambiente invalidas:',
-    parsed.error.flatten().fieldErrors,
+    z.flattenError(parsed.error).fieldErrors,
   );
   process.exit(1);
 }

@@ -1,4 +1,4 @@
-> Verificação integrada Fase 4: 77 testes da API e 17 fluxos de interface aprovados localmente. A gravação usa React Native Web; validação Android/iOS físico ainda pendente.
+> Verificação integrada Fase 4: 81 testes da API e 17 fluxos de interface aprovados localmente. A gravação usa React Native Web; validação Android/iOS físico ainda pendente.
 
 # Blog dos Docentes — Tech Challenge FIAP
 
@@ -58,13 +58,13 @@ Após o seed da Fase 4, use `ana@blog.dev` / `senha123` como docente ou `aluno@b
 
 ### Situação da entrega
 
-Em 18/11/2026 foram confirmados: API com **77 testes em 6 suítes**, build e lint aprovados; seed executado duas vezes sem duplicação; mobile SDK 58 com typecheck, lint e exportação web aprovados, além de **Expo Doctor 20/20**. A revisão estática tratou sessão/401, carregamento e confirmação via Modal. A verificação integrada no Chrome aprovou 17 fluxos com API e PostgreSQL reais, sem erros JavaScript de página.
+Em 18/11/2026 foram confirmados: API com **81 testes em 7 suítes**, build e lint aprovados; seed executado duas vezes sem duplicação; mobile SDK 58 com typecheck, lint e exportação web aprovados, além de **Expo Doctor 20/20**. A revisão estática tratou sessão/401, carregamento e confirmação via Modal. A verificação integrada no Chrome aprovou 17 fluxos com API e PostgreSQL reais, sem erros JavaScript de página.
 
 **Testes de integração exigem banco isolado.** Eles limpam tabelas, e `jest.safety.js` bloqueia bancos sem o segmento `test` no nome; o CI usa `blog_test`. Configure a `DATABASE_URL` para um banco descartável, como `blog_fase4_test`, antes de aplicar migrações e executar a suíte. Siga o [guia de testes](docs/FASE4_ARQUITETURA.md#verificação-e-banco-isolado).
 
-Ainda não houve teste em aparelhos físicos Android/iOS nem geração/instalação de binário nativo. Após ajustes compatíveis, a auditoria npm permanece com 46 ocorrências na raiz (44 altas, 2 moderadas) e 42 no mobile (40 altas, 2 moderadas), incluindo apontamentos herdados/de desenvolvimento; entre os da raiz estão Zod 3 e qs. Não foi aplicada correção forçada incompatível. Esses resultados não atestam prontidão para produção.
+Em 19/11/2026, a auditoria completa da API, do mobile e da web retornou zero alertas. O aviso residual de picomatch foi retirado da base oficial; os detalhes e o histórico estão em [dependências](docs/DEPENDENCIAS.md).
 
-O [checklist da Fase 4](docs/FASE4_ENTREGA.md) detalha resultados e limites sem reutilizar cobertura histórica. A [demonstração gravada](docs/media/demonstracao-fase4.webm) tem 2min16s, usa React Native Web e apresenta legendas sem áudio. O roteiro de 14min30s é uma alternativa para apresentação narrada. [Relato do autor](docs/FASE4_RELATO.md) e [documentação em PDF](docs/documentacao-fase4.pdf) acompanham a entrega. Código da fase: [branch codex/fase4-mobile-20261118](https://github.com/DevTeixeira25/tech-challenge-blog/tree/codex/fase4-mobile-20261118), publicada para revisão antes de integrar à main.
+O [checklist da Fase 4](docs/FASE4_ENTREGA.md) detalha resultados e limites sem reutilizar cobertura histórica. A [demonstração gravada](docs/media/demonstracao-fase4.webm) tem 4min54s, usa React Native Web e apresenta legendas sem áudio. O roteiro de 14min30s é uma alternativa para apresentação narrada. [Relato do autor](docs/FASE4_RELATO.md) e [documentação em PDF](docs/documentacao-fase4.pdf) acompanham a entrega. Código da fase: [branch codex/fase4-mobile-20261118](https://github.com/DevTeixeira25/tech-challenge-blog/tree/codex/fase4-mobile-20261118), publicada para revisão antes de integrar à main.
 
 A documentação abaixo é o histórico da API e da SPA das fases anteriores. Instruções e resultados históricos de testes não atestam a validação da Fase 4; em caso de divergência, consulte os documentos FASE4, especialmente as regras atuais de perfis e cadastro.
 
@@ -202,7 +202,7 @@ inicia (ver `docker-entrypoint.sh`).
 Para popular com posts de exemplo e criar os docentes de teste:
 
 ```bash
-docker compose exec app node dist/seed.js
+docker compose exec app node dist/prisma/seed.js
 ```
 
 O seed cria **ana@blog.dev** e **carlos@blog.dev**, ambos com a senha
@@ -470,3 +470,9 @@ Está em [`docs/RELATO.md`](docs/RELATO.md).
 | Código-fonte, Dockerfiles e CI/CD | este repositório |
 | Apresentação gravada | link na seção [Demonstração](#demonstração) |
 | Documentação | [`docs/ENTREGA.md`](docs/ENTREGA.md), [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md), [`docs/RELATO.md`](docs/RELATO.md) e [`web/README.md`](web/README.md) |
+
+## Atualização: dependências, vídeo com código e iPhone
+
+[Correções e pendência sem patch](docs/DEPENDENCIAS.md) · [Guia de teste no iPhone](docs/TESTE_IPHONE.md) · [Capítulos do vídeo com código](docs/VIDEO_FASE4.md).
+
+O vídeo atualizado mostra o funcionamento e oito capítulos de código real. No iPhone, já foi confirmado o acesso da API pelo Safari; a abertura e os fluxos nativos no Expo Go ainda precisam ser executados pelo autor.

@@ -21,6 +21,65 @@
     "erro de rede e recuperação",
     "API rejeita escrita de aluno com403"
   ],
+  "codeChapters": [
+    {
+      "title": "Navegação por arquivos",
+      "file": "mobile/src/app/_layout.tsx",
+      "startLine": 19,
+      "endLine": 42,
+      "startSecond": 94
+    },
+    {
+      "title": "Hooks e busca no servidor",
+      "file": "mobile/src/app/index.tsx",
+      "startLine": 28,
+      "endLine": 53,
+      "startSecond": 110
+    },
+    {
+      "title": "Sessão por plataforma",
+      "file": "mobile/src/lib/session.tsx",
+      "startLine": 11,
+      "endLine": 34,
+      "startSecond": 130
+    },
+    {
+      "title": "Integração REST e Bearer",
+      "file": "mobile/src/lib/api.ts",
+      "startLine": 39,
+      "endLine": 69,
+      "startSecond": 150
+    },
+    {
+      "title": "Permissão conferida na API",
+      "file": "src/middlewares/auth.middleware.ts",
+      "startLine": 16,
+      "endLine": 38,
+      "startSecond": 174
+    },
+    {
+      "title": "CRUD e paginação protegidos",
+      "file": "src/routes/people.routes.ts",
+      "startLine": 9,
+      "endLine": 34,
+      "startSecond": 198
+    },
+    {
+      "title": "Validação de senha em UTF-8",
+      "file": "src/schemas/password.schema.ts",
+      "startLine": 1,
+      "endLine": 10,
+      "startSecond": 218
+    },
+    {
+      "title": "Testes que preservam os contratos",
+      "file": "tests/validation.compatibility.test.ts",
+      "startLine": 18,
+      "endLine": 41,
+      "startSecond": 234
+    }
+  ],
   "pageErrors": [],
-  "nativeDeviceTested": false
+  "nativeDeviceTested": false,
+  "iphoneApiHealthConfirmed": true
 }

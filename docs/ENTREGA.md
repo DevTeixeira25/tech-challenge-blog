@@ -106,7 +106,7 @@ O requisito 2 menciona comentários como opcional; não foram implementados.
 git clone https://github.com/DevTeixeira25/tech-challenge-blog.git
 cd tech-challenge-blog
 docker compose up --build -d
-docker compose exec app node dist/seed.js
+docker compose exec app node dist/prisma/seed.js
 ```
 
 | Serviço | Endereço |

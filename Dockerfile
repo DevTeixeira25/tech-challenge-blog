@@ -18,7 +18,7 @@ COPY src ./src
 RUN npm run build
 
 # Compila o seed separado: no host ele roda com tsx, mas a imagem final não
-# leva devDependencies. Assim `node dist/seed.js` funciona dentro do container.
+# leva devDependencies. Assim `node dist/prisma/seed.js` funciona dentro do container.
 RUN npx tsc prisma/seed.ts \
     --outDir dist \
     --module commonjs \

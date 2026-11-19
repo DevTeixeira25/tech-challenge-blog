@@ -149,11 +149,11 @@ Remove-Item Env:DATABASE_URL
 
 A última linha remove a configuração temporária do terminal; os processos seguintes podem voltar a carregar o `.env`. Não execute o seed da demonstração no lugar da preparação do banco de teste.
 
-Em `mobile/`: `npm run typecheck`, `npm run lint`, `npm run export:web` e `npx expo-doctor`. Os resultados confirmados em 18/11/2026 incluem API com 77 testes em 6 suítes, build/lint; mobile com typecheck/lint/export web e Expo Doctor 20/20. Consulte a tabela de evidências em [FASE4_ENTREGA.md](FASE4_ENTREGA.md) para distinguir esses resultados do fluxo visual completo ainda em registro.
+Em `mobile/`: `npm run typecheck`, `npm run lint`, `npm run export:web` e `npx expo-doctor`. Os resultados confirmados em 18/11/2026 incluem API com 81 testes em 7 suítes, build/lint; mobile com typecheck/lint/export web e Expo Doctor 20/20. Consulte a tabela de evidências em [FASE4_ENTREGA.md](FASE4_ENTREGA.md) para distinguir esses resultados do fluxo visual completo ainda em registro.
 
 ## Limitações observadas
 
 - As verificações móveis foram realizadas no contexto de desenvolvimento/exportação e de um teste inicial no navegador com React Native Web. Não houve validação em dispositivo físico Android/iOS nem geração e instalação de binário nativo. A exportação web não comprova execução nativa.
 - A revisão estática tratou corridas de sessão/401, atualização de carregamento e confirmação via Modal. Essa revisão não substitui a validação completa dos fluxos pela interface.
-- A auditoria de dependências, após atualizações compatíveis, ainda reportou 46 ocorrências na raiz (44 altas, 2 moderadas) e 42 no mobile (40 altas, 2 moderadas), incluindo dependências herdadas/de desenvolvimento. Entre os apontamentos da raiz estão Zod 3 e qs. Não foi aplicado ajuste forçado que pudesse romper compatibilidade do Expo ou backend. As contagens representam o resultado daquele ambiente/data e podem mudar com novas bases de auditoria.
+- Em 19/11/2026, a auditoria completa da API, do mobile e da web retornou zero alertas. O aviso residual de picomatch foi retirado da base oficial; os detalhes e o histórico estão em [dependências](DEPENDENCIAS.md).
 - Testes aprovados e verificação de compatibilidade não certificam segurança para produção. Permanecem pendentes a avaliação das dependências vulneráveis, a validação nativa e a configuração de implantação.

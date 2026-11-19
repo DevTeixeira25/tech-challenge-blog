@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { ZodError } from 'zod';
+import { flattenError, ZodError } from 'zod';
 import { Prisma } from '@prisma/client';
 import { AppError } from '../errors/AppError';
 
@@ -27,7 +27,7 @@ export function errorHandler(
     return res.status(400).json({
       error: 'ValidationError',
       message: 'Dados inválidos',
-      details: err.flatten().fieldErrors,
+      details: flattenError(err).fieldErrors,
     });
   }
 

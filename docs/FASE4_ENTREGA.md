@@ -4,7 +4,7 @@
 - Aplicativo: [mobile/](../mobile/); API: [src/](../src/); banco e migrações: [prisma/](../prisma/).
 - Configuração, arquitetura e uso: [FASE4_ARQUITETURA.md](FASE4_ARQUITETURA.md) e [README raiz](../README.md).
 - Decisões e relato: [FASE4_RELATO.md](FASE4_RELATO.md).
-- Vídeo: [demonstração legendada](media/demonstracao-fase4.webm), **2min16s**, sem áudio, renderizador React Native Web.
+- Vídeo: [demonstração legendada](media/demonstracao-fase4.webm), **4min54s**, sem áudio, renderizador React Native Web.
 - Código da Fase 4: [branch codex/fase4-mobile-20261118](https://github.com/DevTeixeira25/tech-challenge-blog/tree/codex/fase4-mobile-20261118), publicada para revisão antes de integrar à main.
 
 As caixas abaixo registram o aceite local. A descrição de uma implementação não equivale a aprovação do critério. Marque somente após verificar o comportamento e registrar a evidência real.
@@ -52,7 +52,7 @@ As caixas abaixo registram o aceite local. A descrição de uma implementação 
 
 ## Roteiro completo alternativo — 14 minutos e 30 segundos
 
-O screencast real legendado do aplicativo em React Native Web está disponível em [media/demonstracao-fase4.webm](media/demonstracao-fase4.webm), com 2min16s e sem áudio. Esse vídeo não é evidência de execução nativa. O roteiro abaixo é uma alternativa para gravar a apresentação completa com os detalhes técnicos exigidos.
+O screencast real legendado do aplicativo em React Native Web está disponível em [media/demonstracao-fase4.webm](media/demonstracao-fase4.webm), com 4min54s e sem áudio. Esse vídeo não é evidência de execução nativa. O roteiro abaixo é uma alternativa para gravar a apresentação completa com os detalhes técnicos exigidos.
 
 Prepare o banco de demonstração com as migrações e o seed atualizados. Mantenha registros suficientes para mais de uma página de professores e alunos. Use contas descartáveis nas exclusões. Abra aplicativo, código e documentos antes da gravação.
 
@@ -79,7 +79,7 @@ Resultados comunicados durante esta implementação assistida. As caixas de acei
 | --- | --- | --- |
 | API: migrações e seed | PostgreSQL 16 local isolado | Migrações aplicadas; seed executado duas vezes, sem duplicação: 14 professores, 13 alunos e 3 posts. Login real de professor e estudante confirmado. |
 | API: lint e build | Desenvolvimento local | Aprovados. |
-| API: testes | Banco PostgreSQL exclusivo de teste | 77 testes em 6 suítes aprovados, incluindo concorrência de convites/exclusão e limite de senha multibyte. Não reutilizar a cobertura percentual histórica da Fase 3. |
+| API: testes | Banco PostgreSQL exclusivo de teste | 81 testes em 7 suítes aprovados, incluindo concorrência de convites/exclusão e limite de senha multibyte. Não reutilizar a cobertura percentual histórica da Fase 3. |
 | Proteção dos testes | `jest.safety.js` e CI | Integração bloqueada quando o nome do banco da `DATABASE_URL` não contém o segmento test; CI usa `blog_test`. |
 | Mobile: typecheck e lint | Expo SDK 58 | Aprovados. |
 | Mobile: exportação web | Expo SDK 58 / React Native Web | Aprovada. Não comprova execução Android/iOS. |
@@ -87,8 +87,8 @@ Resultados comunicados durante esta implementação assistida. As caixas de acei
 | Mobile: revisão estática | Código do aplicativo | Tratadas corridas de sessão/401, carregamento e confirmação via Modal; não substitui execução dos fluxos. |
 | Interface no navegador | React Native Web | 17 fluxos aprovados com API e PostgreSQL reais; nenhum erro JavaScript de página. [Evidências](media/verificacao-interface.json). |
 | Execução física/binário nativo | Android/iOS | Não realizados: sem teste em aparelho físico e sem geração/instalação de binário. |
-| Auditoria de dependências | npm audit após ajustes compatíveis | Raiz: 46 ocorrências (44 altas, 2 moderadas); mobile: 42 (40 altas, 2 moderadas). Permanecem apontamentos herdados/de desenvolvimento, incluindo Zod 3 e qs na raiz. Sem correção forçada incompatível. |
-| Vídeo | Arquivo WebM incluído | Gravação legendada de 2min16s disponível; conferir a forma de envio aceita pela instituição. |
+| Auditoria de dependências | npm audit em 19/11/2026 | Zero alertas nas três frentes, incluindo desenvolvimento. O advisory residual de picomatch foi retirado da base oficial; [histórico](DEPENDENCIAS.md). |
+| Vídeo | Arquivo WebM incluído | Gravação legendada de 4min54s disponível; conferir a forma de envio aceita pela instituição. |
 | Código da fase | GitHub | Branch `codex/fase4-mobile-20261118`; revisão antes de integrar à main. |
 
 As verificações aprovadas não representam certificação de segurança nem prontidão para produção. Avaliação das dependências, validação nativa e configuração de implantação permanecem como limitações objetivas. Consulte [FASE4_ARQUITETURA.md](FASE4_ARQUITETURA.md) para executar testes somente em banco isolado.
@@ -103,6 +103,6 @@ As verificações aprovadas não representam certificação de segurança nem pr
 
 A verificação automatizada no Chrome exercitou **17 fluxos aprovados**, com o aplicativo React Native Web em viewport de celular conectado à API Express e PostgreSQL reais. Incluiu leitura pública, busca, login de aluno e docente, bloqueio de rota de aluno, CRUD de posts e dos dois perfis, paginação das duas listas, cancelamento/confirmação de exclusão, falha de rede com recuperação e rejeição HTTP 403 para escrita de estudante. Nenhum erro JavaScript de página foi registrado. Os dados usados eram exclusivos de demonstração.
 
-Foi produzida uma gravação legendada, sem áudio, chamada `demonstracao-fase4.webm`. Ela mostra os fluxos e inclui explicações técnicas de arquitetura. A gravação usa o renderizador web do React Native e não representa execução em aparelho físico. O roteiro de 14min30s deste documento continua disponível para uma apresentação narrada pela equipe.
+Foi produzida uma gravação legendada, sem áudio, chamada `demonstracao-fase4.webm`. Ela mostra os fluxos e oito capítulos com trechos reais do código, números de linha e explicações técnicas. Consulte [os capítulos](VIDEO_FASE4.md). A gravação usa o renderizador web do React Native e não representa execução em aparelho físico. O roteiro de 14min30s deste documento continua disponível para uma apresentação narrada pela equipe.
 
-A suíte final da API tem **77 testes aprovados em 6 suítes**. TypeScript, lint e build da API e da versão web passaram. No mobile, passaram typecheck, lint, exportação web e Expo Doctor (20/20). O projeto inclui CI para as três frentes; a execução remota do CI só poderá ser confirmada depois da publicação.
+A suíte final da API tem **81 testes aprovados em 7 suítes**. TypeScript, lint e build da API e da versão web passaram. No mobile, passaram typecheck, lint, exportação web e Expo Doctor (20/20). O projeto inclui CI para as três frentes; a execução remota do CI só poderá ser confirmada depois da publicação.

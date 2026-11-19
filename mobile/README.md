@@ -62,3 +62,9 @@ npx expo-doctor
 A exportação web verifica a construção do aplicativo; não substitui testar em um dispositivo Android/iOS. Para um build nativo, configure sua conta e projeto Expo e execute `npx eas-cli@latest build --platform android` ou `--platform ios`. Não há credenciais de distribuição, binários assinados ou configuração de conta Expo incluídos.
 
 Para validação integrada, com a API real ligada: entre como professor, crie/edite/exclua um post e pessoas (confirmando a exclusão), navegue entre páginas, entre como aluno e tente abrir um link `/admin`, force uma sessão inválida e teste falhas de conexão/retry. As contas de teste e o banco devem ser provisionados pelo procedimento documentado no README raiz.
+
+## Abrir no iPhone
+
+O [guia do iPhone](../docs/TESTE_IPHONE.md) explica o teste com Expo Go SDK 58. No iPhone físico, entre na mesma conta Expo no computador (`npx expo login`) e no Expo Go. Depois execute `npx expo start --go --lan`, escaneie o QR com a Câmera e permita acesso à Rede Local. O login Expo é diferente das contas de professor e aluno do blog.
+
+[Revisão das dependências e alerta sem patch](../docs/DEPENDENCIAS.md).
